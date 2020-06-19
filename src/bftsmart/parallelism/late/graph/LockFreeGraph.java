@@ -82,7 +82,7 @@ public class LockFreeGraph extends DependencyGraph {
                 found = aux.reservedAtomic.compareAndSet(false, true);  // atomically set to reserve for exec
             }
         }
-        return aux.getData();
+        return aux;
     }
 
     @Override
