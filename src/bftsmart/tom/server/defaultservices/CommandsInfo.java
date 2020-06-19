@@ -30,7 +30,13 @@ public class CommandsInfo implements Serializable {
 	
     public byte[][] commands;
     public MessageContext[] msgCtx;
+    private Integer ID;
 
+    public CommandsInfo(Integer ID) {
+    	this.ID = ID;
+        this.commands = null;
+        this.msgCtx = null;
+    }
 
     public CommandsInfo () {
         this.commands = null;
@@ -123,6 +129,10 @@ public class CommandsInfo implements Serializable {
 
         return hash;
     }
+
+	public Integer getID() {
+		return ID;
+	}
 
     //These methods were used when the class extended interface Externizable,
     //but this was causing serialization problems when the batch of operations

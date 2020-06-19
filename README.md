@@ -46,6 +46,8 @@ Once all replicas are ready, the client can be launched as follows:
 
 ```
 ./runscripts/smartrun.sh bftsmart.demo.counter.CounterClient 1001 <increment> [<number of operations>]
+Example:
+./runscripts/smartrun.sh bftsmart.demo.counter.CounterClient 1001 1 1000
 ```
 
 If `<increment>` equals 0 the request will be read-only. Default `<number of operations>` equals 1000.
