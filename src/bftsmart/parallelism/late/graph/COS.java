@@ -35,7 +35,8 @@ public abstract class COS {
     
     protected boolean isDependent(Object thisRequest, Object otherRequest){
     	//FIXME: ver como fica melhor de fazer, só trocar por Object ou por Generics
-        return false;
+        //return this.conflictDefinition.isDependent(thisRequest, otherRequest);
+    	return true;
     }
     
     public void insert(Object request) throws InterruptedException {

@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import bftsmart.tom.server.defaultservices.CommandsInfo;
 
-public class LockFreeGraphTest {
+public class LockFreeGraphNoDependenciesTest {
 
 	COS cos = null;
 	int limit = 1;
@@ -15,6 +15,7 @@ public class LockFreeGraphTest {
 
 	@Before
 	public void setUp() throws Exception {
+		System.out.println("Setup running");
 		limit = 10;
 		initialData = 5;
 		cos = new LockFreeGraph(limit + initialData);
@@ -43,9 +44,18 @@ public class LockFreeGraphTest {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				fail("LockFreeGraphTest: testInsert: fail");
+				fail("===> testInsert: fail");
 			}
 		}
+	}
+
+	@Test
+	public void testPrintGraph() {
+		LockFreeGraph graph = (LockFreeGraph) cos;
+		System.out.println("printing Graph ==================================================");
+		System.out.println();
+		System.out.println(graph.print());
+		System.out.println("done Graph ==================================================");
 	}
 
 	@Test
@@ -54,11 +64,11 @@ public class LockFreeGraphTest {
 
 			Object node = cos.get();
 			CommandsInfo cmdInfo = (CommandsInfo) ((DependencyGraph.vNode) node).getData();
-			System.out.println("LockFreeGraphTest: testGet: cosGetResult: " + cmdInfo.getID());
+			System.out.println("===> testGet: " + cmdInfo.getID());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			fail("LockFreeGraphTest: testGet: fail");
+			fail("===> testGet: fail");
 		}
 	}
 

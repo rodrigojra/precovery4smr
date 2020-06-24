@@ -1,4 +1,4 @@
-package recovery;
+package bftsmart.recovery;
 
 import static org.junit.Assert.*;
 

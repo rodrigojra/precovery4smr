@@ -5,19 +5,16 @@
  */
 package bftsmart.parallelism.late;
 
-import bftsmart.parallelism.MessageContextPair;
-
-
 /**
  *
  * @author eduardo
  */
-public abstract class ConflictDefinition {
+public abstract class ConflictDefinition<T> {
 
     public ConflictDefinition() {
     }
  
-     public abstract boolean isDependent(MessageContextPair r1, MessageContextPair r2);
+     public abstract boolean isDependent(T r1, T r2);
     
     
     

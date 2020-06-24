@@ -239,7 +239,7 @@ public abstract class DependencyGraph extends COS {
         String list = "Head ";
         vNode aux = head.getNext();
         while (aux.getVertex() != Vertex.TAIL) {
-            list = list + " " + aux.getData() + "<" + aux.getDepends() + ">";
+            list = list + " " + aux.getData() + " <" + aux.getDepends() + "> ";
             aux = aux.getNext();
         }
         list = list + " Tail";
