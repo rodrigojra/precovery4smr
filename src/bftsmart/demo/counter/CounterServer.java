@@ -24,6 +24,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import bftsmart.recovery.SequentialRecovery;
 import bftsmart.tom.MessageContext;
@@ -39,20 +40,36 @@ import bftsmart.tom.ServiceReplica;
 
 public final class CounterServer extends SequentialRecovery {
 
-	private int counter = 0;
-	private int iterations = 0;
+//	private int counter = 0;
+//	private int iterations = 0;
 
+	private AtomicInteger counter = new AtomicInteger(0);
+	private AtomicInteger iterations = new AtomicInteger(0);	
+	
+	public CounterServer() {
+	}	
+	
 	public CounterServer(int id) {
 		new ServiceReplica(id, this, this);
 	}
 
+	
+	
+	public int getCounter() {
+		return counter.get();
+	}
+
+	public int getIterations() {
+		return iterations.get();
+	}
+
 	@Override
 	public byte[] appExecuteUnordered(byte[] command, MessageContext msgCtx) {
-		iterations++;
+		iterations.incrementAndGet();
 		System.out.println("(" + iterations + ") Counter current value: " + counter);
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
-			new DataOutputStream(out).writeInt(counter);
+			new DataOutputStream(out).writeInt(counter.get());
 			return out.toByteArray();
 		} catch (IOException ex) {
 			System.err.println("Invalid request received!");
@@ -62,25 +79,27 @@ public final class CounterServer extends SequentialRecovery {
 
 	@Override
 	public byte[] appExecuteOrdered(byte[] command, MessageContext msgCtx) {
-		iterations++;
-		try {
-			int increment = new DataInputStream(new ByteArrayInputStream(command)).readInt();
-			counter += increment;
-
-			System.out.println("(" + iterations + ") Counter was incremented. Current value = " + counter);
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
-			new DataOutputStream(out).writeInt(counter);
-			return out.toByteArray();
-		} catch (IOException ex) {
-			System.err.println("Invalid request received!");
-			return new byte[0];
-		}
+		return delay.ensureMinCost(() -> {
+			iterations.incrementAndGet();
+			try {
+				int increment = new DataInputStream(new ByteArrayInputStream(command)).readInt();
+				counter.addAndGet(increment);
+	
+				System.out.println("(" + iterations + ") Counter was incremented. Current value = " + counter);
+	
+				ByteArrayOutputStream out = new ByteArrayOutputStream(4);
+				new DataOutputStream(out).writeInt(counter.get());
+				return out.toByteArray();
+			} catch (IOException ex) {
+				System.err.println("Invalid request received!");
+				return new byte[0];
+			}
+		});
 	}
 
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println("Use: java CounterServer <processId>");
+			System.out.println("Use: java CounterServerConcurrent <processId>");
 			System.exit(-1);
 		}
 		new CounterServer(Integer.parseInt(args[0]));
@@ -92,7 +111,8 @@ public final class CounterServer extends SequentialRecovery {
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(state);
 			ObjectInput in = new ObjectInputStream(bis);
-			counter = in.readInt();
+			//counter = in.readInt();
+			counter.addAndGet(in.readInt());
 			in.close();
 			bis.close();
 		} catch (IOException e) {
@@ -105,7 +125,8 @@ public final class CounterServer extends SequentialRecovery {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = new ObjectOutputStream(bos);
-			out.writeInt(counter);
+			//out.writeInt(counter);
+			out.writeInt(counter.get());
 			out.flush();
 			bos.flush();
 			out.close();

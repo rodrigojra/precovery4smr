@@ -11,19 +11,20 @@ public class LockFreeGraphNoDependenciesTest {
 
 	COS cos = null;
 	int limit = 1;
-	int initialData = 1;
+	int initialData = 0;
 
 	@Before
 	public void setUp() throws Exception {
 		System.out.println("Setup running");
-		limit = 10;
-		initialData = 5;
+		//limit = 10;
+		//initialData = 5;
+		
 		cos = new LockFreeGraph(limit + initialData);
 		CommandsInfo cmdInfo = null;
 
-		for (int i = 0; i < initialData; i++) {
+		for (int i = 0; i < limit; i++) {
 			try {
-				cmdInfo = new CommandsInfo(Integer.valueOf(i));
+				cmdInfo = new CommandsInfo(Integer.valueOf(10+i));
 				cos.insert(cmdInfo);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -31,8 +32,9 @@ public class LockFreeGraphNoDependenciesTest {
 				fail("LockFreeGraphTest:setUp:fail");
 			}
 		}
-	}
 
+	}
+/*
 	@Test
 	public void testInsert() {
 		CommandsInfo cmdInfo = null;
@@ -48,7 +50,7 @@ public class LockFreeGraphNoDependenciesTest {
 			}
 		}
 	}
-
+*/
 	@Test
 	public void testPrintGraph() {
 		LockFreeGraph graph = (LockFreeGraph) cos;

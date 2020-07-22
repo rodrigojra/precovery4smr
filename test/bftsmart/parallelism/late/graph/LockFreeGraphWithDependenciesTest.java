@@ -21,7 +21,7 @@ public class LockFreeGraphWithDependenciesTest {
 		initialData = 5;
 		cos = new LockFreeGraph(limit + initialData);
 		CommandsInfo cmdInfo = null;
-		
+		/*
         ConflictDefinition<CommandsInfo> conflictDefinition = new ConflictDefinition<CommandsInfo>() {
 
 			@Override
@@ -32,7 +32,7 @@ public class LockFreeGraphWithDependenciesTest {
         };
 		
         cos.setConflictDefinition(conflictDefinition);
-
+		 */
 		for (int i = 0; i < initialData; i++) {
 			try {
 				cmdInfo = new CommandsInfo(Integer.valueOf(i));

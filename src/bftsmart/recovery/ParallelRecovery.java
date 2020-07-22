@@ -39,7 +39,7 @@ import bftsmart.tom.util.TOMUtil;
  * I created that to do some experiments without affect the original class
  *
  */
-public abstract class SequentialRecovery implements Recoverable, SingleExecutable {
+public abstract class ParallelRecovery implements Recoverable, SingleExecutable {
     
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     
@@ -66,7 +66,7 @@ public abstract class SequentialRecovery implements Recoverable, SingleExecutabl
     	this.isJunit = isJunit;
     }
     
-    public SequentialRecovery() {
+    public ParallelRecovery() {
 
         try {
             md = TOMUtil.getHashEngine();
@@ -352,6 +352,8 @@ public abstract class SequentialRecovery implements Recoverable, SingleExecutabl
      * @return the reply for the request issued by the client
      */
     public abstract byte[] appExecuteOrdered(byte[] command, MessageContext msgCtx);
+    
+    public abstract byte[] newAppExecuteOrdered(Command command);
     
     /**
      * Execute an unordered request

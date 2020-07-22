@@ -7,15 +7,12 @@ package bftsmart.parallelism.late;
 
 /**
  *
- * @author eduardo
+ * @author Rodrigo Antunes
  */
-public abstract class ConflictDefinition<T> {
+public  interface ConflictDefinition<T> {
 
-    public ConflictDefinition() {
-    }
- 
-     public abstract boolean isDependent(T r1, T r2);
-    
-    
+     //public boolean isDependent(T r1, T r2);
+     
+     public boolean isDependent(T r2);
     
 }
