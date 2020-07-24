@@ -14,7 +14,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import bftsmart.recovery.Command.Type;
 
-final class PooledScheduler /* implements Scheduler */ {
+final class PooledScheduler2 /* implements Scheduler */ {
 
 	private static final int MAX_SIZE = 150;
 
@@ -29,16 +29,16 @@ final class PooledScheduler /* implements Scheduler */ {
 	}
 
 	private class Stats {
-		final Counter commandWithConflict;
-		//final Counter ready;
+		Counter commandWithConflict;
+		//Counter ready;
 
 		Stats(MetricRegistry metrics) {
 			commandWithConflict = metrics.counter(name(PooledScheduler2.class, "commandWithConflict"));
-			//ready = metrics.counter(name(PooledScheduler.class, "ready"));
+			//ready = metrics.counter(name(PooledScheduler2.class, "ready"));
 		}
 	}
 
-	//private final int nThreads;
+	// private final int nThreads;
 	private final ExecutorService pool;
 	// private final Semaphore space;
 	private List<Task> scheduled;
@@ -46,8 +46,8 @@ final class PooledScheduler /* implements Scheduler */ {
 
 	private Consumer<Command> executor;
 
-	PooledScheduler(/*int nThreads,*/ ExecutorService pool, MetricRegistry metrics) {
-		//this.nThreads = nThreads;
+	PooledScheduler2(/* int nThreads, */ ExecutorService pool, MetricRegistry metrics) {
+		// this.nThreads = nThreads;
 		// this.space = new Semaphore(MAX_SIZE);
 		this.scheduled = new LinkedList<>();
 		this.stats = new Stats(metrics);
@@ -91,13 +91,23 @@ final class PooledScheduler /* implements Scheduler */ {
 					iterator.remove();
 					continue;
 				}
-				
-				if (newTask.command.isDependent(task.command)) {
-				//if (task.command.isDependent(newTask.command)) {
-					dependencies.add(task.future);
-					System.out.println(">>> dependency added from " + newTask.command + "to "+ task.command);
+
+				// if (newTask.command.isDependent(task.command)) {
+				// if (newTask.command.isDependent(task.command)) {
+				// dependencies.add(task.future);
+				// System.out.println(">>> dependency added from " + newTask.command + "to "+
+				// task.command);
+				// }
+			}
+
+			if (!scheduled.isEmpty()) {
+				Task otherTask = scheduled.get(scheduled.size() - 1);
+				if (newTask.command.isDependent(otherTask.command)) {
+					dependencies.add(otherTask.future);
+					System.out.println(">>> dependency added from " + newTask.command + "to " + otherTask.command);
 					stats.commandWithConflict.inc();
 				}
+
 			}
 		}
 		scheduled.add(newTask);

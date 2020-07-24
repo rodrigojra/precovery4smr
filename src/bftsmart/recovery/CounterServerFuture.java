@@ -19,23 +19,29 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.CsvReporter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Stopwatch;
 
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Example replica that implements a BFT replicated service (a counter). If the
@@ -50,8 +56,24 @@ public final class CounterServerFuture extends ParallelRecovery {
 
 	private AtomicInteger counter = new AtomicInteger(0);
 	private AtomicInteger iterations = new AtomicInteger(0);
+	private int numberOfThreads;
+	private Stats stats;
+	private MetricRegistry metrics;
+	boolean logMetrics = false;
+	
+	public int getNumberOfThreads() {
+		return numberOfThreads;
+	}
+
+	public void setNumberOfThreads(int numberOfThreads) {
+		this.numberOfThreads = numberOfThreads;
+	}
 
 	public CounterServerFuture() {
+		File path = createMetricsDirectory();
+		metrics = new MetricRegistry();
+		stats = new Stats(metrics);
+		startReporting(metrics, path);
 	}
 
 	public CounterServerFuture(int id) {
@@ -64,6 +86,40 @@ public final class CounterServerFuture extends ParallelRecovery {
 
 	public int getIterations() {
 		return iterations.get();
+	}
+
+	private File createMetricsDirectory() {
+		File dir = new File("./metrics");
+		if (!dir.exists()) {
+			if (!dir.mkdirs()) {
+				System.out.println("Can not create ./metrics directory.");
+				System.exit(1);
+			}
+		} else if (!dir.isDirectory()) {
+			System.out.println("./metrics must be a directory");
+			System.exit(1);
+		}
+		return dir;
+	}
+
+	private void startReporting(MetricRegistry metrics, File path) {
+
+        CsvReporter csvReporter =
+                CsvReporter
+                        .forRegistry(metrics)
+                        .convertRatesTo(TimeUnit.SECONDS)
+                        .build(path);
+        csvReporter.start(1, TimeUnit.SECONDS);
+
+        if (logMetrics) {
+            ConsoleReporter consoleReporter =
+                    ConsoleReporter
+                            .forRegistry(metrics)
+                            .convertRatesTo(TimeUnit.SECONDS)
+                            .build();
+            consoleReporter.start(10, TimeUnit.SECONDS);
+        }		
+		
 	}
 
 	@Override
@@ -88,17 +144,21 @@ public final class CounterServerFuture extends ParallelRecovery {
 				int increment = new DataInputStream(new ByteArrayInputStream(command.getData())).readInt();
 				// counter += increment;
 				counter.addAndGet(increment);
-				System.out.println(Thread.currentThread().getName() + " - command " + command.toString() + " - Counter was incremented. Current value = " + counter);
+				// System.out.println(Thread.currentThread().getName() + " - command " +
+				// command.toString() + " - Counter was incremented. Current value = " +
+				// counter);
 				ByteArrayOutputStream out = new ByteArrayOutputStream(4);
 				new DataOutputStream(out).writeInt(counter.get());
 				return out.toByteArray();
 			} catch (IOException ex) {
 				System.err.println("Invalid request received!");
 				return new byte[0];
+			} finally {
+				stats.commands.mark();
 			}
 		});
-	}	
-	
+	}
+
 	@Override
 	public byte[] appExecuteOrdered(byte[] command, MessageContext msgCtx) {
 		iterations.incrementAndGet();
@@ -169,11 +229,11 @@ public final class CounterServerFuture extends ParallelRecovery {
 			logLock.lock();
 			if (!isJunit) {
 				initLog();
-				//log.update(state);
+				// log.update(state);
 			}
-			
+
 			logLock.unlock();
-			
+
 			int lastCheckpointCID = state.getLastCheckpointCID();
 			lastCID = state.getLastCID();
 			logger.debug("I'm going to update myself from CID " + lastCheckpointCID + " to CID " + lastCID);
@@ -181,14 +241,21 @@ public final class CounterServerFuture extends ParallelRecovery {
 			installSnapshot(state.getState());
 			Stopwatch stopwatch = Stopwatch.createStarted();
 			// TODO Mover para o arquivo de configuração
-			int nThreads = 5;
-			//ForkJoinPool pool = new ForkJoinPool(nThreads, ForkJoinPool.defaultForkJoinWorkerThreadFactory,null, true, nThreads, nThreads, 0, null, 60, TimeUnit.SECONDS);
-			ExecutorService executorService = new ForkJoinPool(nThreads);
-			
-			PooledScheduler pooledScheduler = new PooledScheduler(nThreads, executorService);
-			//pooledScheduler.setExecutor(a -> System.out.println(Thread.currentThread().getName() + " - " +a));
+			// int nThreads = 5;
+			// ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads,
+			// ForkJoinPool.defaultForkJoinWorkerThreadFactory,null, true, nThreads,
+			// nThreads, 0, null, 60, TimeUnit.SECONDS);
+			ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads);
+			// PooledScheduler pooledScheduler = new PooledScheduler(pool);
+			PooledScheduler2 pooledScheduler = new PooledScheduler2(pool, metrics);
+
+			logger.debug("Pool parallelism " + pool.getParallelism());
+			logger.debug("Pool size " + pool.getPoolSize());
+			logger.debug("Pool Active Thread Count " + pool.getActiveThreadCount());
+			// pooledScheduler.setExecutor(a ->
+			// System.out.println(Thread.currentThread().getName() + " - " +a));
 			pooledScheduler.setExecutor(this::newAppExecuteOrdered);
-			
+
 			for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
@@ -196,6 +263,7 @@ public final class CounterServerFuture extends ParallelRecovery {
 
 					for (Command command : commandList) {
 						pooledScheduler.schedule(command);
+						stats.workloadSize.inc();
 					}
 				} catch (Exception e) {
 					logger.error("Failed to process and verify batched requests", e);
@@ -209,18 +277,18 @@ public final class CounterServerFuture extends ParallelRecovery {
 				}
 			}
 
-			executorService.shutdown();
+			pool.shutdown();
 			// next line will block till all tasks finishes
 			try {
-				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+				pool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			stopwatch.stop();
-			logger.info("Recovery time elapsed: " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
-			logger.info("Recovery time elapsed: " + stopwatch.elapsed(TimeUnit.SECONDS));
+			logger.info("Recovery time elapsed MILLISECONDS: " + stopwatch.elapsed(TimeUnit.MILLISECONDS));
+			logger.info("Recovery time elapsed SECONDS: " + stopwatch.elapsed(TimeUnit.SECONDS));
 
 			stateLock.unlock();
 
@@ -229,4 +297,13 @@ public final class CounterServerFuture extends ParallelRecovery {
 		return lastCID;
 	}
 
+    private class Stats {
+        Counter workloadSize;
+        Meter commands;
+
+        Stats(MetricRegistry metrics) {
+        	workloadSize = metrics.counter(name(CounterServerFuture.class, "workloadSize"));
+        	commands = metrics.meter(name(CounterServerFuture.class, "commands"));
+        }
+    }
 }

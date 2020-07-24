@@ -37,6 +37,7 @@ public class CounterServerRecoveryTest {
 	public void setUp() throws Exception {
 		COMMANDS_PER_BATCH = 5000;
 		BATCH_SIZE = 1;
+		System.out.println("Workload size = " + COMMANDS_PER_BATCH * BATCH_SIZE);
 		CHECKPOINT_CID = 0;
 		LAST_CID = BATCH_SIZE;
 	}

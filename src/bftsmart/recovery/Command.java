@@ -22,7 +22,7 @@ public class Command implements ConflictDefinition<Command>  {
 	private MessageContext messageContext;
 	private Type type; 
 	
-	enum Type {PARALLEL, CONCURRENT};
+	enum Type {PARALLEL, CONFLICT};
 	
 	public Command() {
 	}
@@ -103,7 +103,7 @@ public class Command implements ConflictDefinition<Command>  {
 	@Override
 	public boolean isDependent(Command cd2) {
 		
-		if (this.getType() == Type.CONCURRENT && cd2.getType() == Type.CONCURRENT) {
+		if (this.getType() == Type.CONFLICT && cd2.getType() == Type.CONFLICT) {
 			return true;
 		}
 
