@@ -16,7 +16,7 @@ import bftsmart.recovery.Command.Type;
 
 final class PooledScheduler /* implements Scheduler */ {
 
-	private static final int MAX_SIZE = 150;
+	//private static final int MAX_SIZE = 150;
 
 	private static final class Task {
 		private final Command command;

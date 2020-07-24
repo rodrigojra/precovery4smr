@@ -1,7 +1,7 @@
 package bftsmart.recovery;
 
-import static org.junit.Assert.*;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -33,6 +33,14 @@ public class SmallTests {
 		}
 		
 		return new byte [] {0,1,2};
+	}
+	
+	@Test
+	public final void testDateFormat() {
+		Date date = new Date() ;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SS") ;
+		System.out.println( "here is " + dateFormat.format(date));
+		
 	}
 
 }

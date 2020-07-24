@@ -25,6 +25,8 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -89,7 +91,10 @@ public final class CounterServerFuture extends ParallelRecovery {
 	}
 
 	private File createMetricsDirectory() {
-		File dir = new File("./metrics");
+		Date date = new Date() ;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SS") ;
+		File dir = new File("./metrics/" + dateFormat.format(date));
+		
 		if (!dir.exists()) {
 			if (!dir.mkdirs()) {
 				System.out.println("Can not create ./metrics directory.");
