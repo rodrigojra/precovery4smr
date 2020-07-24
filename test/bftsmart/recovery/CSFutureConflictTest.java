@@ -10,15 +10,20 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentMatchers;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.recovery.Command.Type;
@@ -26,6 +31,7 @@ import bftsmart.tom.MessageContext;
 import bftsmart.tom.util.TOMUtil;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CSFutureConflictTest {
 
@@ -36,9 +42,29 @@ public class CSFutureConflictTest {
 	private int INCREMENT_VALUE;
 	private CounterServerFuture countServerRecovery;
 	private GraphApplicationState recvState;
+	private int THREAD_POOL_SIZE;
+	private int conflictProbabilityPercentage;
+	
+	
+	public  CSFutureConflictTest(int workloadSize, int conflictProbabilityPercentage) {
+		super();
+		this.COMMANDS_PER_BATCH = workloadSize;
+		this.conflictProbabilityPercentage = conflictProbabilityPercentage;
+	}
+
+	@Parameters
+	public static Collection<Object[]> workloadVersusConflict() {
+		return Arrays.asList(new Object[][] {
+				// Workload Size | Thread Pool Size
+				{ 1000, 5 }, { 1000, 10 }, { 1000, 25 }, { 1000, 50 }, { 1000, 75 }, 
+				{ 10000, 5 }, { 10000, 10 }, { 10000, 25 }, { 10000, 50 }, { 10000, 75 },
+				{ 100000, 5 }, { 100000, 10 }, { 100000, 25 }, { 100000, 50 }, { 100000, 75 }
+		});
+	}
 
 	@Before
 	public void setUp() throws Exception {
+		THREAD_POOL_SIZE = 6;
 		COMMANDS_PER_BATCH = 5000;
 		BATCH_SIZE = 1;
 		CHECKPOINT_CID = 0;
@@ -46,7 +72,7 @@ public class CSFutureConflictTest {
 		INCREMENT_VALUE = 1;
 		System.out.println("Workload size = " + COMMANDS_PER_BATCH * BATCH_SIZE);
 		countServerRecovery = new CounterServerFuture();
-		countServerRecovery.setNumberOfThreads(6);
+		countServerRecovery.setNumberOfThreads(THREAD_POOL_SIZE);
 		MessageDigest md = mock(MessageDigest.class);
 		mockStatic(TOMUtil.class);
 		when(TOMUtil.getHashEngine()).thenReturn(md);
@@ -71,10 +97,20 @@ public class CSFutureConflictTest {
 		when(configMock.isToLog()).thenReturn(false);
 		countServerRecovery.setConfig(configMock);
 		countServerRecovery.setIsJunit(true);
-
 	}
 
-	private void generateCommandListConflictProbabilityBased(List<Command> commandList, int ConflictProbability) {
+	@Test
+	public final void testSetStateFutureDependencyTest() throws NoSuchAlgorithmException {
+		System.out.println("********* Workload ["+ COMMANDS_PER_BATCH + "] Conflict Probability Percentage ["+ this.conflictProbabilityPercentage + "%] *********");
+		List<Command> commandList = new ArrayList<Command>(1);
+		generateCommandListConflictProbabilityBased(commandList);
+		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
+		countServerRecovery.setState(recvState);
+		System.out.println(">> counter: " + countServerRecovery.getCounter());
+		System.out.println(">> iterations: " + countServerRecovery.getIterations());
+	}
+
+	private void generateCommandListConflictProbabilityBased(List<Command> commandList) {
         Random random = new Random();
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -90,7 +126,7 @@ public class CSFutureConflictTest {
 
 	        int r = random.nextInt(100);
 	        
-	        if (r < ConflictProbability) {
+	        if (r < this.conflictProbabilityPercentage) {
 	        	command.setType(Type.CONFLICT);
 	        } else {
 	        	command.setType(Type.PARALLEL);
@@ -99,21 +135,7 @@ public class CSFutureConflictTest {
 			commandList.add(command);
 		}
 	}
-	
-	
-	@Test
-	public final void testSetStateFuture_dependency_10_percent() throws NoSuchAlgorithmException {
-		List<Command> commandList = new ArrayList<Command>(1);
-		int dependency_10_percent = 10;
-		System.out.println("---10% of conflict probaility ---");
-		generateCommandListConflictProbabilityBased(commandList, dependency_10_percent);
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
-	}
-
-
+/*
 	@Test
 	public final void testSetStateFuture_dependency_25_percent() throws NoSuchAlgorithmException {
 		//countServerRecovery.setNumberOfThreads(4);
@@ -171,5 +193,5 @@ public class CSFutureConflictTest {
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
 	}	
-	
+*/	
 }
