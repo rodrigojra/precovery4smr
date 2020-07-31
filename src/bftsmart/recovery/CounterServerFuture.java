@@ -113,6 +113,7 @@ public final class CounterServerFuture extends ParallelRecovery {
                 CsvReporter
                         .forRegistry(metrics)
                         .convertRatesTo(TimeUnit.SECONDS)
+                        .convertDurationsTo(TimeUnit.MILLISECONDS)
                         .build(path);
         csvReporter.start(1, TimeUnit.SECONDS);
 
@@ -251,8 +252,8 @@ public final class CounterServerFuture extends ParallelRecovery {
 			// ForkJoinPool.defaultForkJoinWorkerThreadFactory,null, true, nThreads,
 			// nThreads, 0, null, 60, TimeUnit.SECONDS);
 			ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads);
-			// PooledScheduler pooledScheduler = new PooledScheduler(pool);
-			PooledScheduler2 pooledScheduler = new PooledScheduler2(pool, metrics);
+			PooledScheduler pooledScheduler = new PooledScheduler(pool, metrics);
+			//PooledScheduler2 pooledScheduler = new PooledScheduler2(pool, metrics);
 
 			logger.debug("Pool parallelism " + pool.getParallelism());
 			logger.debug("Pool size " + pool.getPoolSize());

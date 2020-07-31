@@ -52,9 +52,9 @@ public class CSFNoConflictParallelTest {
 	public static Collection<Object[]> workloadVersusThreads() {
 		return Arrays.asList(new Object[][] {
 				// Workload Size | Thread Pool Size
-				{ 1000, 2 }, { 1000, 4 }, { 1000, 6 }, 
+				{ 5000,  2 }, { 5000, 4 },  { 5000,  6 }, 
 				{ 10000, 2 }, { 10000, 4 }, { 10000, 6 },
-				{ 100000, 2 }, { 100000, 4 }, { 100000, 6 }
+				{ 20000, 2 }, { 20000, 4 }, { 20000, 6 }
 		});
 	}
 

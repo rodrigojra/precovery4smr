@@ -2,3 +2,7 @@ bin/bftsmart
 config/currentView
 /target/
 dist/
+bin/
+logs/
+.settings/
+

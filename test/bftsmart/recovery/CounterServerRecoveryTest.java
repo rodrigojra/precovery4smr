@@ -9,13 +9,18 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.ArgumentMatchers;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
 import bftsmart.demo.counter.CounterServer;
 import bftsmart.reconfiguration.util.TOMConfiguration;
@@ -25,6 +30,7 @@ import bftsmart.tom.server.defaultservices.DefaultApplicationState;
 import bftsmart.tom.util.TOMUtil;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CounterServerRecoveryTest {
 
@@ -32,10 +38,24 @@ public class CounterServerRecoveryTest {
 	private int BATCH_SIZE;
 	private int LAST_CID;
 	private int CHECKPOINT_CID;
+	
+	public CounterServerRecoveryTest(int workloadSize) {
+		super();
+		this.COMMANDS_PER_BATCH = workloadSize;
+	}
+
+	@Parameters
+	public static Collection<Object[]> workloadSize() {
+		return Arrays.asList(new Object[][] {
+				//Workload size
+				{ 5000  }, 
+				{ 10000 },
+				{ 20000 }
+		});
+	}	
 
 	@Before
 	public void setUp() throws Exception {
-		COMMANDS_PER_BATCH = 5000;
 		BATCH_SIZE = 1;
 		System.out.println("Workload size = " + COMMANDS_PER_BATCH * BATCH_SIZE);
 		CHECKPOINT_CID = 0;

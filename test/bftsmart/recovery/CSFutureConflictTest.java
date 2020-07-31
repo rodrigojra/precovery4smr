@@ -56,16 +56,16 @@ public class CSFutureConflictTest {
 	public static Collection<Object[]> workloadVersusConflict() {
 		return Arrays.asList(new Object[][] {
 				// Workload Size | Thread Pool Size
-				{ 1000, 5 }, { 1000, 10 }, { 1000, 25 }, { 1000, 50 }, { 1000, 75 }, 
+				{ 5000,  5 }, { 5000,  10 }, { 5000,  25 }, { 5000,  50 }, { 5000,  75 }, 
 				{ 10000, 5 }, { 10000, 10 }, { 10000, 25 }, { 10000, 50 }, { 10000, 75 },
-				{ 100000, 5 }, { 100000, 10 }, { 100000, 25 }, { 100000, 50 }, { 100000, 75 }
+				{ 20000, 5 }, { 20000, 10 }, { 20000, 25 }, { 20000, 50 }, { 20000, 75 }
 		});
 	}
 
 	@Before
 	public void setUp() throws Exception {
 		THREAD_POOL_SIZE = 6;
-		COMMANDS_PER_BATCH = 5000;
+		//COMMANDS_PER_BATCH = 5000;
 		BATCH_SIZE = 1;
 		CHECKPOINT_CID = 0;
 		LAST_CID = BATCH_SIZE;
@@ -135,63 +135,4 @@ public class CSFutureConflictTest {
 			commandList.add(command);
 		}
 	}
-/*
-	@Test
-	public final void testSetStateFuture_dependency_25_percent() throws NoSuchAlgorithmException {
-		//countServerRecovery.setNumberOfThreads(4);
-		List<Command> commandList = new ArrayList<Command>(1);
-		int dependency_25_percent = 25;
-		System.out.println(dependency_25_percent + "% of conflict probaility ---");
-		
-		generateCommandListConflictProbabilityBased(commandList, dependency_25_percent);
-
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
-	}
-	
-	@Test
-	public final void testSetStateFuture_dependency_50_percent() throws NoSuchAlgorithmException {
-		//countServerRecovery.setNumberOfThreads(4);
-		List<Command> commandList = new ArrayList<Command>(1);
-		int dependency_50_percent = 50;
-		System.out.println(dependency_50_percent + "% of conflict probaility ---");
-
-		generateCommandListConflictProbabilityBased(commandList, dependency_50_percent);
-
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
-	}
-	
-	@Test
-	public final void testSetStateFuture_dependency_75_percent() throws NoSuchAlgorithmException {
-		//countServerRecovery.setNumberOfThreads(4);
-		List<Command> commandList = new ArrayList<Command>(1);
-		int dependency_75_percent = 75;
-		System.out.println(dependency_75_percent + "% of conflict probaility ---");
-
-		generateCommandListConflictProbabilityBased(commandList, dependency_75_percent);
-
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
-	}	
-	
-	@Test
-	public final void testSetStateFuture_dependency_90_percent() throws NoSuchAlgorithmException {
-		//countServerRecovery.setNumberOfThreads(4);
-		List<Command> commandList = new ArrayList<Command>(1);
-		int dependency_90_percent = 90;
-		System.out.println(dependency_90_percent + "% of conflict probaility ---");
-		generateCommandListConflictProbabilityBased(commandList, dependency_90_percent);
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
-	}	
-*/	
 }

@@ -95,7 +95,7 @@ final class PooledScheduler /* implements Scheduler */ {
 				if (newTask.command.isDependent(task.command)) {
 				//if (task.command.isDependent(newTask.command)) {
 					dependencies.add(task.future);
-					System.out.println(">>> dependency added from " + newTask.command + "to "+ task.command);
+					//System.out.println(">>> dependency added from " + newTask.command + "to "+ task.command);
 					stats.commandWithConflict.inc();
 				}
 			}
@@ -109,10 +109,10 @@ final class PooledScheduler /* implements Scheduler */ {
 			// stats.ready.inc();
 			pool.execute(() -> execute(newTask));
 		} else {
-			after(dependencies).thenRunAsync(() -> {
+			after(dependencies).thenRun(() -> {
 				// stats.ready.inc();
 				execute(newTask);
-			}, pool);
+			});
 		}
 	}
 

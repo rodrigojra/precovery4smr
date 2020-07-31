@@ -85,7 +85,7 @@ public final class CounterServer extends SequentialRecovery {
 				int increment = new DataInputStream(new ByteArrayInputStream(command)).readInt();
 				counter.addAndGet(increment);
 	
-				System.out.println("(" + iterations + ") Counter was incremented. Current value = " + counter);
+				//System.out.println("(" + iterations + ") Counter was incremented. Current value = " + counter);
 	
 				ByteArrayOutputStream out = new ByteArrayOutputStream(4);
 				new DataOutputStream(out).writeInt(counter.get());

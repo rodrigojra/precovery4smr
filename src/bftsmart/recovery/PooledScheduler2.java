@@ -104,7 +104,7 @@ final class PooledScheduler2 /* implements Scheduler */ {
 				Task otherTask = scheduled.get(scheduled.size() - 1);
 				if (newTask.command.isDependent(otherTask.command)) {
 					dependencies.add(otherTask.future);
-					System.out.println(">>> dependency added from " + newTask.command + "to " + otherTask.command);
+					//System.out.println(">>> dependency added from " + newTask.command + "to " + otherTask.command);
 					stats.commandWithConflict.inc();
 				}
 
