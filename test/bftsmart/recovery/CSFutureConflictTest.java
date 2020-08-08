@@ -56,15 +56,15 @@ public class CSFutureConflictTest {
 	public static Collection<Object[]> workloadVersusConflict() {
 		return Arrays.asList(new Object[][] {
 				// Workload Size | Thread Pool Size
-				{ 5000,  5 }, { 5000,  10 }, { 5000,  25 }, { 5000,  50 }, { 5000,  75 }, 
-				{ 10000, 5 }, { 10000, 10 }, { 10000, 25 }, { 10000, 50 }, { 10000, 75 },
-				{ 20000, 5 }, { 20000, 10 }, { 20000, 25 }, { 20000, 50 }, { 20000, 75 }
+				{ 5000,  5 }, { 5000,  10 }, { 5000,  20 }, { 5000,  40 }, //{ 5000,  80 }, 
+				{ 10000, 5 }, { 10000, 10 }, { 10000, 20 }, { 10000, 40 }, //{ 10000, 80 },
+				{ 20000, 5 }, { 20000, 10 }, { 20000, 20 }, { 20000, 40 }//, { 20000, 80 }
 		});
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		THREAD_POOL_SIZE = 6;
+		THREAD_POOL_SIZE = 8;
 		//COMMANDS_PER_BATCH = 5000;
 		BATCH_SIZE = 1;
 		CHECKPOINT_CID = 0;

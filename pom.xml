@@ -39,7 +39,7 @@
 		    <artifactId>core</artifactId>
 		    <version>0.1.4</version>
 		    <scope>system</scope>
-		    <systemPath>/home/rodrigo/workspace/pucrs/master_degree/precovery4smr/lib/core-0.1.4.jar</systemPath>
+		    <systemPath>${basedir}/lib/core-0.1.4.jar</systemPath>
 		</dependency>		
 		<!-- 		
 		<dependency>

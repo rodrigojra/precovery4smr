@@ -14,7 +14,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import bftsmart.recovery.Command.Type;
 
-final class PooledScheduler /* implements Scheduler */ {
+final class RecoveryDispatcher {
 
 	//private static final int MAX_SIZE = 150;
 
@@ -24,7 +24,7 @@ final class PooledScheduler /* implements Scheduler */ {
 
 		Task(Command command) {
 			this.command = command;
-			this.future = new CompletableFuture<>();
+			this.future = new CompletableFuture<Void>();
 		}
 	}
 
@@ -46,7 +46,7 @@ final class PooledScheduler /* implements Scheduler */ {
 
 	private Consumer<Command> executor;
 
-	PooledScheduler(/*int nThreads,*/ ExecutorService pool, MetricRegistry metrics) {
+	RecoveryDispatcher(/*int nThreads,*/ ExecutorService pool, MetricRegistry metrics) {
 		//this.nThreads = nThreads;
 		// this.space = new Semaphore(MAX_SIZE);
 		this.scheduled = new LinkedList<>();
@@ -65,7 +65,7 @@ final class PooledScheduler /* implements Scheduler */ {
 //    }
 
 //    @Override
-	public void schedule(Command command) {
+	public void post(Command command) {
 		try {
 			// space.acquire();
 			// stats.size.inc();

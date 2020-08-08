@@ -28,7 +28,7 @@ import bftsmart.recovery.CounterServerGuajaGraph;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CounterGuajaGraphRecoveryTest {
-
+/*
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
 	private int LAST_CID;
@@ -99,4 +99,5 @@ public class CounterGuajaGraphRecoveryTest {
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
 	}
+	*/
 }

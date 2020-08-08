@@ -8,7 +8,7 @@ import org.junit.Test;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
 
 public class LockFreeGraphNoDependenciesTest {
-
+	/*
 	COS cos = null;
 	int limit = 1;
 	int initialData = 0;
@@ -34,7 +34,7 @@ public class LockFreeGraphNoDependenciesTest {
 		}
 
 	}
-/*
+
 	@Test
 	public void testInsert() {
 		CommandsInfo cmdInfo = null;
@@ -50,7 +50,7 @@ public class LockFreeGraphNoDependenciesTest {
 			}
 		}
 	}
-*/
+
 	@Test
 	public void testPrintGraph() {
 		LockFreeGraph graph = (LockFreeGraph) cos;
@@ -93,4 +93,5 @@ public class LockFreeGraphNoDependenciesTest {
 			fail("LockFreeGraphTest: testGet: fail");
 		}
 	}
+	*/
 }

@@ -32,14 +32,14 @@ import bftsmart.tom.util.TOMUtil;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
-public class CounterServerRecoveryTest {
+public class CounterServerSequentialTest {
 
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
 	private int LAST_CID;
 	private int CHECKPOINT_CID;
 	
-	public CounterServerRecoveryTest(int workloadSize) {
+	public CounterServerSequentialTest(int workloadSize) {
 		super();
 		this.COMMANDS_PER_BATCH = workloadSize;
 	}

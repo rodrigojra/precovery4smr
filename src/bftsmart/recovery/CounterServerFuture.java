@@ -252,7 +252,7 @@ public final class CounterServerFuture extends ParallelRecovery {
 			// ForkJoinPool.defaultForkJoinWorkerThreadFactory,null, true, nThreads,
 			// nThreads, 0, null, 60, TimeUnit.SECONDS);
 			ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads);
-			PooledScheduler pooledScheduler = new PooledScheduler(pool, metrics);
+			RecoveryDispatcher pooledScheduler = new RecoveryDispatcher(pool, metrics);
 			//PooledScheduler2 pooledScheduler = new PooledScheduler2(pool, metrics);
 
 			logger.debug("Pool parallelism " + pool.getParallelism());
@@ -268,7 +268,7 @@ public final class CounterServerFuture extends ParallelRecovery {
 					List<Command> commandList = state.getMessageListBatch(cid);
 
 					for (Command command : commandList) {
-						pooledScheduler.schedule(command);
+						pooledScheduler.post(command);
 						stats.workloadSize.inc();
 					}
 				} catch (Exception e) {

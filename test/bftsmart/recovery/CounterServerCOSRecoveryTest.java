@@ -28,7 +28,7 @@ import bftsmart.tom.util.TOMUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CounterServerCOSRecoveryTest {
-
+/*
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
 	private int LAST_CID;
@@ -214,4 +214,5 @@ public class CounterServerCOSRecoveryTest {
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
 	}
+	*/
 }

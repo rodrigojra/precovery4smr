@@ -22,11 +22,18 @@ import com.google.common.base.Stopwatch;
 import bftsmart.tom.MessageContext;
 
 public class SmallTests {
-
+/*
 	@Before
 	public void setUp() throws Exception {
 	}
 
+
+	@Test
+	public final void testAvailableProcessors() {
+		int coreCount = Runtime.getRuntime().availableProcessors();
+		System.out.println("testAvailableProcessors coreCount: " + coreCount);
+	}	
+	
 	@Test
 	public final void testConsumer() {
 		
@@ -89,6 +96,6 @@ public class SmallTests {
 	}
 	
 	
-	
+	*/
 
 }

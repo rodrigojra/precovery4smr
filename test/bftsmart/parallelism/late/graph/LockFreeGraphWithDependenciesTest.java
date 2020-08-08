@@ -9,7 +9,7 @@ import bftsmart.parallelism.late.ConflictDefinition;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
 
 public class LockFreeGraphWithDependenciesTest {
-
+	/*
 	COS cos = null;
 	int limit = 1;
 	int initialData = 1;
@@ -21,7 +21,7 @@ public class LockFreeGraphWithDependenciesTest {
 		initialData = 5;
 		cos = new LockFreeGraph(limit + initialData);
 		CommandsInfo cmdInfo = null;
-		/*
+		
         ConflictDefinition<CommandsInfo> conflictDefinition = new ConflictDefinition<CommandsInfo>() {
 
 			@Override
@@ -32,7 +32,7 @@ public class LockFreeGraphWithDependenciesTest {
         };
 		
         cos.setConflictDefinition(conflictDefinition);
-		 */
+		 
 		for (int i = 0; i < initialData; i++) {
 			try {
 				cmdInfo = new CommandsInfo(Integer.valueOf(i));
@@ -71,7 +71,7 @@ public class LockFreeGraphWithDependenciesTest {
 		System.out.println("======================= done Graph ===============================");
 /*
  Head  CommandsInfo [ID=0] <0>  CommandsInfo [ID=1] <0>  CommandsInfo [ID=2] <0>  CommandsInfo [ID=3] <0>  CommandsInfo [ID=4] <0>  Tail
-*/
+
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class LockFreeGraphWithDependenciesTest {
 ===> testGetNext: 2
 ===> testGetNext: 3
 ===> testGetNext: 4			
- */
+ 
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -139,4 +139,5 @@ public class LockFreeGraphWithDependenciesTest {
 			fail("===> testGet: fail");
 		}
 	}
+	*/
 }
