@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Stopwatch;
 import com.google.common.graph.MutableGraph;
 
-import bftsmart.parallel.recovery.Command;
 import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.SequentialRecovery;
 import bftsmart.statemanagement.ApplicationState;
@@ -175,11 +174,11 @@ public final class CounterServerGuajaGraph extends SequentialRecovery {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
 					// CommandsInfo cmdInfo = state.getMessageBatch(cid);
-					MutableGraph<Command> graph = state.getMessageMutableGraphBatch(cid);
+					MutableGraph<CounnterCommand> graph = state.getMessageMutableGraphBatch(cid);
 
 					if (graph.edges().isEmpty()) {
 						
-						for (Command cmd : graph.nodes()) {
+						for (CounnterCommand cmd : graph.nodes()) {
 							
 							if (cmd == null || cmd.getMessageContext() == null || cmd.getMessageContext().isNoOp()) {
 								continue;

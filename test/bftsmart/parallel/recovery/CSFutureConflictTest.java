@@ -25,10 +25,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
-import bftsmart.parallel.recovery.Command;
-import bftsmart.parallel.recovery.Command.Type;
 import bftsmart.parallel.recovery.GraphApplicationState;
+import bftsmart.parallel.recovery.demo.counter.CounnterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterServerFuture;
+import bftsmart.parallel.recovery.demo.counter.CounnterCommand.Type;
 import bftsmart.reconfiguration.util.TOMConfiguration;
 
 import bftsmart.tom.MessageContext;
@@ -106,7 +106,7 @@ public class CSFutureConflictTest {
 	@Test
 	public final void testSetStateFutureDependencyTest() throws NoSuchAlgorithmException {
 		System.out.println("********* Workload ["+ COMMANDS_PER_BATCH + "] Conflict Probability Percentage ["+ this.conflictProbabilityPercentage + "%] *********");
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 		generateCommandListConflictProbabilityBased(commandList);
 		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
 		countServerRecovery.setState(recvState);
@@ -114,7 +114,7 @@ public class CSFutureConflictTest {
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
 	}
 
-	private void generateCommandListConflictProbabilityBased(List<Command> commandList) {
+	private void generateCommandListConflictProbabilityBased(List<CounnterCommand> commandList) {
         Random random = new Random();
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -126,17 +126,17 @@ public class CSFutureConflictTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand counnterCommand = new CounnterCommand(i, out.toByteArray(), msgContext);
 
 	        int r = random.nextInt(100);
 	        
 	        if (r < this.conflictProbabilityPercentage) {
-	        	command.setType(Type.CONFLICT);
+	        	counnterCommand.setType(Type.CONFLICT);
 	        } else {
-	        	command.setType(Type.PARALLEL);
+	        	counnterCommand.setType(Type.PARALLEL);
 	        }
 
-			commandList.add(command);
+			commandList.add(counnterCommand);
 		}
 	}
 }

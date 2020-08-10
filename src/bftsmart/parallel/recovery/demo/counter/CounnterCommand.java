@@ -1,7 +1,7 @@
 /**
  * 
  */
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.demo.counter;
 
 import java.util.Arrays;
 
@@ -15,7 +15,7 @@ import bftsmart.tom.MessageContext;
  * @author Rodrigo Antunes
  *
  */
-public class Command implements ConflictDefinition<Command>  {
+public class CounnterCommand implements ConflictDefinition<CounnterCommand>  {
 	
 	private int id;
 	private byte [] data;
@@ -24,14 +24,14 @@ public class Command implements ConflictDefinition<Command>  {
 	
 	public enum Type {PARALLEL, CONFLICT};
 	
-	public Command() {
+	public CounnterCommand() {
 	}
 
-	public Command(int id, byte[] data, MessageContext messageContext) {
+	public CounnterCommand(int id, byte[] data, MessageContext messageContext) {
 		this(id, data, messageContext, Type.PARALLEL);
 	}
 	
-	public Command(int id, byte[] data, MessageContext messageContext, Type type) {
+	public CounnterCommand(int id, byte[] data, MessageContext messageContext, Type type) {
 		this.id = id;
 		this.data = data;
 		this.messageContext = messageContext;
@@ -70,7 +70,7 @@ public class Command implements ConflictDefinition<Command>  {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Command other = (Command) obj;
+		CounnterCommand other = (CounnterCommand) obj;
 		if (!Arrays.equals(data, other.data))
 			return false;
 		if (id != other.id)
@@ -86,7 +86,7 @@ public class Command implements ConflictDefinition<Command>  {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Command [id=");
+		builder.append("CounnterCommand [id=");
 		builder.append(id);
 		builder.append("]");
 		return builder.toString();
@@ -101,7 +101,7 @@ public class Command implements ConflictDefinition<Command>  {
 	}
 
 	@Override
-	public boolean isDependent(Command cd2) {
+	public boolean isDependent(CounnterCommand cd2) {
 		
 		if (this.getType() == Type.CONFLICT && cd2.getType() == Type.CONFLICT) {
 			return true;

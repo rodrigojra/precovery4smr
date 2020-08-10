@@ -75,7 +75,7 @@ public class CounterGuajaGraphRecoveryTest {
 		// MessageContext[] msgCtxs = new MessageContext[COMMANDS_PER_BATCH];
 		// byte [][] commands = new byte[COMMANDS_PER_BATCH][1];
 		
-		MutableGraph<Command> graph = GraphBuilder.directed().build();
+		MutableGraph<CounnterCommand> graph = GraphBuilder.directed().build();
 		
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -88,7 +88,7 @@ public class CounterGuajaGraphRecoveryTest {
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
 			
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			graph.addNode(command);
 		}
 

@@ -37,15 +37,15 @@ public class SmallTests {
 	@Test
 	public final void testConsumer() {
 		
-		Map<Command, MessageContext> map = new HashMap<Command, MessageContext>();
-		map.put(new Command(1111, new byte[] {0,1,2,3,4}, null), null);
-		Consumer<Map<Command, MessageContext>> consumer = this::appOrdered;
+		Map<CounnterCommand, MessageContext> map = new HashMap<CounnterCommand, MessageContext>();
+		map.put(new CounnterCommand(1111, new byte[] {0,1,2,3,4}, null), null);
+		Consumer<Map<CounnterCommand, MessageContext>> consumer = this::appOrdered;
 		consumer.accept(map);
 	}
 	
-	public byte[] appOrdered(Map<Command, MessageContext> map) {
+	public byte[] appOrdered(Map<CounnterCommand, MessageContext> map) {
 		
-		for (Map.Entry<Command, MessageContext> entry : map.entrySet()) {
+		for (Map.Entry<CounnterCommand, MessageContext> entry : map.entrySet()) {
 		    System.out.println(entry.getKey() + "/" + entry.getValue());
 		}
 		

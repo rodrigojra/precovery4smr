@@ -41,7 +41,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Stopwatch;
 
-import bftsmart.parallel.recovery.Command;
 import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.ParallelRecovery;
 import bftsmart.parallel.recovery.RecoveryDispatcher;
@@ -147,11 +146,11 @@ public final class CounterServerFuture extends ParallelRecovery {
 	}
 
 	@Override
-	public byte[] newAppExecuteOrdered(Command command) {
+	public byte[] newAppExecuteOrdered(CounnterCommand counnterCommand) {
 		return delay.ensureMinCost(() -> {
 			iterations.incrementAndGet();
 			try {
-				int increment = new DataInputStream(new ByteArrayInputStream(command.getData())).readInt();
+				int increment = new DataInputStream(new ByteArrayInputStream(counnterCommand.getData())).readInt();
 				// counter += increment;
 				counter.addAndGet(increment);
 				// System.out.println(Thread.currentThread().getName() + " - command " +
@@ -269,10 +268,10 @@ public final class CounterServerFuture extends ParallelRecovery {
 			for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
-					List<Command> commandList = state.getMessageListBatch(cid);
+					List<CounnterCommand> commandList = state.getMessageListBatch(cid);
 
-					for (Command command : commandList) {
-						pooledScheduler.post(command);
+					for (CounnterCommand counnterCommand : commandList) {
+						pooledScheduler.post(counnterCommand);
 						stats.workloadSize.inc();
 					}
 				} catch (Exception e) {

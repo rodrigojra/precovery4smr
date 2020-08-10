@@ -24,6 +24,7 @@ import com.google.common.graph.MutableGraph;
 
 import bftsmart.consensus.messages.ConsensusMessage;
 import bftsmart.parallel.late.graph.COS;
+import bftsmart.parallel.recovery.demo.counter.CounnterCommand;
 import bftsmart.reconfiguration.ServerViewController;
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.tom.core.messages.TOMMessage;
@@ -68,11 +69,11 @@ public class GraphApplicationState implements ApplicationState {
     	return null;
     }
     
-    public MutableGraph<Command> getMessageMutableGraphBatch(int cid) {
+    public MutableGraph<CounnterCommand> getMessageMutableGraphBatch(int cid) {
     	return null;
     }
     
-    public List<Command> getMessageListBatch(int cid) {
+    public List<CounnterCommand> getMessageListBatch(int cid) {
     	return null;
     }    
 

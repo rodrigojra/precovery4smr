@@ -24,8 +24,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
-import bftsmart.parallel.recovery.Command;
 import bftsmart.parallel.recovery.GraphApplicationState;
+import bftsmart.parallel.recovery.demo.counter.CounnterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterServerFuture;
 import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.tom.MessageContext;
@@ -102,7 +102,7 @@ public class CSFNoConflictParallelTest {
 	public final void testSetStateFuture_no_dependency_02_threads() throws NoSuchAlgorithmException {
 		System.out.println("********* Workload ["+ COMMANDS_PER_BATCH + "] Number of threads ["+THREAD_POOL_SIZE + "] *********");
 		countServerRecovery.setNumberOfThreads(THREAD_POOL_SIZE);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -114,8 +114,8 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
-			commandList.add(command);
+			CounnterCommand counnterCommand = new CounnterCommand(i, out.toByteArray(), msgContext);
+			commandList.add(counnterCommand);
 		}
 
 		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
@@ -127,7 +127,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_03_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(3);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -139,7 +139,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -152,7 +152,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_04_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(4);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -164,7 +164,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -177,7 +177,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_05_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(5);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -189,7 +189,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -202,7 +202,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_06_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(6);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -214,7 +214,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -227,7 +227,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_08_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(8);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -239,7 +239,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -252,7 +252,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_16_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(16);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -264,7 +264,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
@@ -277,7 +277,7 @@ public class CSFNoConflictParallelTest {
 	@Test
 	public final void testSetStateFuture_no_dependency_32_threads() throws NoSuchAlgorithmException {
 		countServerRecovery.setNumberOfThreads(32);
-		List<Command> commandList = new ArrayList<Command>(1);
+		List<CounnterCommand> commandList = new ArrayList<CounnterCommand>(1);
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
@@ -289,7 +289,7 @@ public class CSFNoConflictParallelTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			Command command = new Command(i, out.toByteArray(), msgContext);
+			CounnterCommand command = new CounnterCommand(i, out.toByteArray(), msgContext);
 			commandList.add(command);
 		}
 
