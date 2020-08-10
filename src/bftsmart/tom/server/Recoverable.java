@@ -15,8 +15,8 @@ limitations under the License.
 */
 package bftsmart.tom.server;
 
-import bftsmart.recovery.SyntacticDelay;
-import bftsmart.recovery.SyntacticDelay2;
+
+import bftsmart.parallel.recovery.SyntacticDelay;
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.statemanagement.StateManager;
 import bftsmart.tom.MessageContext;
@@ -29,7 +29,7 @@ import bftsmart.tom.ReplicaContext;
  */
 public interface Recoverable {
 	
-	SyntacticDelay2 delay = new SyntacticDelay2(20000000);
+	SyntacticDelay delay = new SyntacticDelay(20000000);
 	
     /**
      * Sets the replica context

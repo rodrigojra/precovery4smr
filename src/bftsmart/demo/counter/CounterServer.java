@@ -26,7 +26,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import bftsmart.recovery.SequentialRecovery;
+import bftsmart.parallel.recovery.SequentialRecovery;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
 

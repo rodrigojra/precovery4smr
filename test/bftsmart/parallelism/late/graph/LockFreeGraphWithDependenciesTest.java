@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import bftsmart.parallelism.late.ConflictDefinition;
+import bftsmart.parallel.late.ConflictDefinition;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
 
 public class LockFreeGraphWithDependenciesTest {
