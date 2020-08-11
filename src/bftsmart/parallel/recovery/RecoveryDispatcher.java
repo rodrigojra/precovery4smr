@@ -12,18 +12,18 @@ import java.util.function.Consumer;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
-import bftsmart.parallel.recovery.demo.counter.CounnterCommand;
-import bftsmart.parallel.recovery.demo.counter.CounnterCommand.Type;
+import bftsmart.parallel.recovery.demo.counter.CounterCommand;
+import bftsmart.parallel.recovery.demo.counter.CounterCommand.Type;
 
 
 public class RecoveryDispatcher {
 
 	private static final class Task {
-		private final CounnterCommand counnterCommand;
+		private final CounterCommand counterCommand;
 		private final CompletableFuture<Void> future;
 
-		Task(CounnterCommand counnterCommand) {
-			this.counnterCommand = counnterCommand;
+		Task(CounterCommand counterCommand) {
+			this.counterCommand = counterCommand;
 			this.future = new CompletableFuture<Void>();
 		}
 	}
@@ -44,7 +44,7 @@ public class RecoveryDispatcher {
 	private List<Task> scheduled;
 	private Stats stats;
 
-	private Consumer<CounnterCommand> executor;
+	private Consumer<CounterCommand> executor;
 
 	public RecoveryDispatcher(/*int nThreads,*/ ExecutorService pool, MetricRegistry metrics) {
 		//this.nThreads = nThreads;
@@ -55,7 +55,7 @@ public class RecoveryDispatcher {
 	}
 
 	// Breaks cyclic dependency with PooledServiceReplica
-	public void setExecutor(Consumer<CounnterCommand> executor) {
+	public void setExecutor(Consumer<CounterCommand> executor) {
 		this.executor = executor;
 	}
 
@@ -65,18 +65,18 @@ public class RecoveryDispatcher {
 //    }
 
 //    @Override
-	public void post(CounnterCommand counnterCommand) {
+	public void post(CounterCommand counterCommand) {
 		try {
 			// space.acquire();
 			// stats.size.inc();
-			doSchedule(counnterCommand);
+			doSchedule(counterCommand);
 		} catch (Exception e) {
 			// Ignored.
 		}
 	}
 
-	private void doSchedule(CounnterCommand counnterCommand) {
-		Task newTask = new Task(counnterCommand);
+	private void doSchedule(CounterCommand counterCommand) {
+		Task newTask = new Task(counterCommand);
 		submit(newTask, addTask(newTask));
 	}
 
@@ -84,7 +84,7 @@ public class RecoveryDispatcher {
 		List<CompletableFuture<Void>> dependencies = new LinkedList<>();
 		ListIterator<Task> iterator = scheduled.listIterator();
 
-		if (newTask.counnterCommand.getType() == Type.CONFLICT) {
+		if (newTask.counterCommand.getType() == Type.CONFLICT) {
 			while (iterator.hasNext()) {
 				Task task = iterator.next();
 				if (task.future.isDone()) {
@@ -92,7 +92,7 @@ public class RecoveryDispatcher {
 					continue;
 				}
 				
-				if (newTask.counnterCommand.isDependent(task.counnterCommand)) {
+				if (newTask.counterCommand.isDependent(task.counterCommand)) {
 				//if (task.command.isDependent(newTask.command)) {
 					dependencies.add(task.future);
 					//System.out.println(">>> dependency added from " + newTask.command + "to "+ task.command);
@@ -123,7 +123,7 @@ public class RecoveryDispatcher {
 	}
 
 	private void execute(Task task) {
-		executor.accept(task.counnterCommand);
+		executor.accept(task.counterCommand);
 		// space.release();
 		// stats.ready.dec();
 		// stats.size.dec();

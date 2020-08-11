@@ -174,11 +174,11 @@ public final class CounterServerGuajaGraph extends SequentialRecovery {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
 					// CommandsInfo cmdInfo = state.getMessageBatch(cid);
-					MutableGraph<CounnterCommand> graph = state.getMessageMutableGraphBatch(cid);
+					MutableGraph<CounterCommand> graph = state.getMessageMutableGraphBatch(cid);
 
 					if (graph.edges().isEmpty()) {
 						
-						for (CounnterCommand cmd : graph.nodes()) {
+						for (CounterCommand cmd : graph.nodes()) {
 							
 							if (cmd == null || cmd.getMessageContext() == null || cmd.getMessageContext().isNoOp()) {
 								continue;

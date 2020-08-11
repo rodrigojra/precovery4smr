@@ -146,11 +146,11 @@ public final class CounterServerFuture extends ParallelRecovery {
 	}
 
 	@Override
-	public byte[] newAppExecuteOrdered(CounnterCommand counnterCommand) {
+	public byte[] newAppExecuteOrdered(CounterCommand counterCommand) {
 		return delay.ensureMinCost(() -> {
 			iterations.incrementAndGet();
 			try {
-				int increment = new DataInputStream(new ByteArrayInputStream(counnterCommand.getData())).readInt();
+				int increment = new DataInputStream(new ByteArrayInputStream(counterCommand.getData())).readInt();
 				// counter += increment;
 				counter.addAndGet(increment);
 				// System.out.println(Thread.currentThread().getName() + " - command " +
@@ -268,10 +268,10 @@ public final class CounterServerFuture extends ParallelRecovery {
 			for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
-					List<CounnterCommand> commandList = state.getMessageListBatch(cid);
+					List<CounterCommand> commandList = state.getMessageListBatch(cid);
 
-					for (CounnterCommand counnterCommand : commandList) {
-						pooledScheduler.post(counnterCommand);
+					for (CounterCommand counterCommand : commandList) {
+						pooledScheduler.post(counterCommand);
 						stats.workloadSize.inc();
 					}
 				} catch (Exception e) {

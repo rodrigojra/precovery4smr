@@ -1,58 +1,54 @@
 /**
  * 
  */
-package bftsmart.parallel.recovery.demo.counter;
+package bftsmart.parallel.recovery;
 
 import java.util.Arrays;
 
 import com.google.common.base.Objects;
 
-import bftsmart.parallel.late.ConflictDefinition;
 import bftsmart.tom.MessageContext;
 
 /**
- * This class represents only one command/operation.
  * @author Rodrigo Antunes
  *
  */
-public class CounnterCommand implements ConflictDefinition<CounnterCommand>  {
-	
-	private int id;
-	private byte [] data;
-	private MessageContext messageContext;
-	private Type type; 
-	
-	public enum Type {PARALLEL, CONFLICT};
-	
-	public CounnterCommand() {
+public class Command {
+	protected int id;
+	protected byte[] data;
+	protected MessageContext messageContext;
+
+	public Command() {
 	}
 
-	public CounnterCommand(int id, byte[] data, MessageContext messageContext) {
-		this(id, data, messageContext, Type.PARALLEL);
-	}
-	
-	public CounnterCommand(int id, byte[] data, MessageContext messageContext, Type type) {
+	public Command(int id, byte[] data, MessageContext messageContext) {
 		this.id = id;
 		this.data = data;
 		this.messageContext = messageContext;
-		this.type = type;
 	}
-	
+
+
+
 	public byte[] getData() {
 		return data;
 	}
+
 	public void setData(byte[] data) {
 		this.data = data;
 	}
+
 	public MessageContext getMessageContext() {
 		return messageContext;
 	}
+
 	public void setMessageContext(MessageContext messageContext) {
 		this.messageContext = messageContext;
 	}
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -70,7 +66,7 @@ public class CounnterCommand implements ConflictDefinition<CounnterCommand>  {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CounnterCommand other = (CounnterCommand) obj;
+		Command other = (Command) obj;
 		if (!Arrays.equals(data, other.data))
 			return false;
 		if (id != other.id)
@@ -86,30 +82,10 @@ public class CounnterCommand implements ConflictDefinition<CounnterCommand>  {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("CounnterCommand [id=");
+		builder.append("CounterCommand [id=");
 		builder.append(id);
 		builder.append("]");
 		return builder.toString();
 	}
 
-	public Type getType() {
-		return type;
-	}
-
-	public void setType(Type type) {
-		this.type = type;
-	}
-
-	@Override
-	public boolean isDependent(CounnterCommand cd2) {
-		
-		if (this.getType() == Type.CONFLICT && cd2.getType() == Type.CONFLICT) {
-			return true;
-		}
-
-		return false;
-	}
-	
-	
 }
-
