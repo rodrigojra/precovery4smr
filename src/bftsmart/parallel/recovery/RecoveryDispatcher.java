@@ -1,4 +1,4 @@
- package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 import com.codahale.metrics.Counter;
@@ -15,8 +16,9 @@ import com.codahale.metrics.MetricRegistry;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand.Type;
 
-
 public class RecoveryDispatcher {
+
+	private static final int MAX_SIZE = 5000;
 
 	private static final class Task {
 		private final CounterCommand counterCommand;
@@ -30,25 +32,25 @@ public class RecoveryDispatcher {
 
 	private class Stats {
 		final Counter commandWithConflict;
-		//final Counter ready;
+		// final Counter ready;
 
 		Stats(MetricRegistry metrics) {
 			commandWithConflict = metrics.counter(name(RecoveryDispatcher.class, "commandWithConflict"));
-			//ready = metrics.counter(name(PooledScheduler.class, "ready"));
+			// ready = metrics.counter(name(PooledScheduler.class, "ready"));
 		}
 	}
 
-	//private final int nThreads;
+	// private final int nThreads;
 	private final ExecutorService pool;
-	// private final Semaphore space;
+	private final Semaphore space;
 	private List<Task> scheduled;
 	private Stats stats;
 
 	private Consumer<CounterCommand> executor;
 
-	public RecoveryDispatcher(/*int nThreads,*/ ExecutorService pool, MetricRegistry metrics) {
-		//this.nThreads = nThreads;
-		// this.space = new Semaphore(MAX_SIZE);
+	public RecoveryDispatcher(/* int nThreads, */ ExecutorService pool, MetricRegistry metrics) {
+		// this.nThreads = nThreads;
+		this.space = new Semaphore(MAX_SIZE);
 		this.scheduled = new LinkedList<>();
 		this.stats = new Stats(metrics);
 		this.pool = pool;
@@ -60,14 +62,9 @@ public class RecoveryDispatcher {
 	}
 
 //    @Override
-//    public int getNumWorkers() {
-//        return nThreads;
-//    }
-
-//    @Override
 	public void post(CounterCommand counterCommand) {
 		try {
-			// space.acquire();
+			space.acquire();
 			// stats.size.inc();
 			doSchedule(counterCommand);
 		} catch (Exception e) {
@@ -91,11 +88,12 @@ public class RecoveryDispatcher {
 					iterator.remove();
 					continue;
 				}
-				
+
 				if (newTask.counterCommand.isDependent(task.counterCommand)) {
-				//if (task.command.isDependent(newTask.command)) {
+					// if (task.command.isDependent(newTask.command)) {
 					dependencies.add(task.future);
-					//System.out.println(">>> dependency added from " + newTask.command + "to "+ task.command);
+					// System.out.println(">>> dependency added from " + newTask.command + "to "+
+					// task.command);
 					stats.commandWithConflict.inc();
 				}
 			}
@@ -119,12 +117,15 @@ public class RecoveryDispatcher {
 	private static CompletableFuture<Void> after(List<CompletableFuture<Void>> fs) {
 		if (fs.size() == 1)
 			return fs.get(0); // fast path
-		return CompletableFuture.allOf(fs.toArray(new CompletableFuture[0]));
+
+		CompletableFuture<Void> allFutures = CompletableFuture.allOf(fs.toArray(new CompletableFuture[fs.size()]));
+
+		return allFutures;
 	}
 
 	private void execute(Task task) {
 		executor.accept(task.counterCommand);
-		// space.release();
+		space.release();
 		// stats.ready.dec();
 		// stats.size.dec();
 		task.future.complete(null);

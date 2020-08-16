@@ -1,8 +1,9 @@
 bin/bftsmart
 config/currentView
-/target/
+target/
 dist/
 bin/
 logs/
+metrics/
+.idea/
 .settings/
-

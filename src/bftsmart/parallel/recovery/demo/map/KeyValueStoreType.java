@@ -5,6 +5,6 @@ package bftsmart.parallel.recovery.demo.map;
  * 
  */
 
-public enum MapRequestType {
+public enum KeyValueStoreType {
 	PUT, GET, SIZE, REMOVE, KEYSET;
 }

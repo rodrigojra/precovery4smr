@@ -14,11 +14,11 @@ import java.util.Set;
 
 import bftsmart.tom.ServiceProxy;
 
-public class MapClient<K, V> implements Map<K, V>{
+public class KeyValueStoreClient<K, V> implements Map<K, V>{
 	
 	ServiceProxy serviceProxy;
 	
-	public MapClient(int clientId) {
+	public KeyValueStoreClient(int clientId) {
 		serviceProxy = new ServiceProxy(clientId);
 	}
 	
@@ -28,7 +28,7 @@ public class MapClient<K, V> implements Map<K, V>{
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
 			
-			objOut.writeObject(MapRequestType.PUT);
+			objOut.writeObject(KeyValueStoreType.PUT);
 			objOut.writeObject(key);
 			objOut.writeObject(value);
 			
@@ -55,7 +55,7 @@ public class MapClient<K, V> implements Map<K, V>{
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
 			
-			objOut.writeObject(MapRequestType.GET);
+			objOut.writeObject(KeyValueStoreType.GET);
 			objOut.writeObject(key);
 			
 			objOut.flush();
@@ -81,7 +81,7 @@ public class MapClient<K, V> implements Map<K, V>{
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
 			
-			objOut.writeObject(MapRequestType.REMOVE);
+			objOut.writeObject(KeyValueStoreType.REMOVE);
 			objOut.writeObject(key);
 			
 			objOut.flush();
@@ -105,7 +105,7 @@ public class MapClient<K, V> implements Map<K, V>{
 	public int size() {
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
-			objOut.writeObject(MapRequestType.SIZE);
+			objOut.writeObject(KeyValueStoreType.SIZE);
 			objOut.flush();
 			byteOut.flush();
 			
@@ -127,7 +127,7 @@ public class MapClient<K, V> implements Map<K, V>{
 		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
 			
-			objOut.writeObject(MapRequestType.KEYSET);
+			objOut.writeObject(KeyValueStoreType.KEYSET);
 			
 			objOut.flush();
 			byteOut.flush();

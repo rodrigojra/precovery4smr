@@ -7,24 +7,24 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import bftsmart.parallel.recovery.ParallelRecovery;
+import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
-import bftsmart.tom.server.defaultservices.DefaultSingleRecoverable;
 
-public class MapServer<K, V> extends DefaultSingleRecoverable {
+public class KeyValueStoreServer<K, V> extends ParallelRecovery {
 
-	private Map<K, V> replicaMap;
+	private ConcurrentHashMap<K, V> replicaMap;
 	private Logger logger;
 
-	public MapServer(int id) {
-		replicaMap = new TreeMap<>();
-		logger = Logger.getLogger(MapServer.class.getName());
+	public KeyValueStoreServer(int id) {
+		replicaMap = new ConcurrentHashMap<K, V>(0);
+		logger = Logger.getLogger(KeyValueStoreServer.class.getName());
 		new ServiceReplica(id, this, this);
 	}
 
@@ -33,7 +33,13 @@ public class MapServer<K, V> extends DefaultSingleRecoverable {
 			System.out.println("Usage: demo.map.MapServer <server id>");
 			System.exit(-1);
 		}
-		new MapServer<String, String>(Integer.parseInt(args[0]));
+		new KeyValueStoreServer<Long, String>(Integer.parseInt(args[0]));
+	}
+
+	@Override
+	public byte[] newAppExecuteOrdered(CounterCommand counterCommand) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,44 +52,45 @@ public class MapServer<K, V> extends DefaultSingleRecoverable {
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(command);
 				ObjectInput objIn = new ObjectInputStream(byteIn);
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
-			MapRequestType reqType = (MapRequestType)objIn.readObject();
+				ObjectOutput objOut = new ObjectOutputStream(byteOut);) 
+		{
+			KeyValueStoreType reqType = (KeyValueStoreType) objIn.readObject();
 			switch (reqType) {
-				case PUT:
-					key = (K)objIn.readObject();
-					value = (V)objIn.readObject();
+			case PUT:
+				key = (K) objIn.readObject();
+				value = (V) objIn.readObject();
 
-					V oldValue = replicaMap.put(key, value);
-					if (oldValue != null) {
-						objOut.writeObject(oldValue);
-						hasReply = true;
-					}
-					break;
-				case GET:
-					key = (K)objIn.readObject();
-					value = replicaMap.get(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case REMOVE:
-					key = (K)objIn.readObject();
-					value = replicaMap.remove(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case SIZE:
-					int size = replicaMap.size();
-					objOut.writeInt(size);
+				V oldValue = replicaMap.put(key, value);
+				if (oldValue != null) {
+					objOut.writeObject(oldValue);
 					hasReply = true;
-					break;
-				case KEYSET:
-					keySet(objOut);
+				}
+				break;
+			case GET:
+				key = (K) objIn.readObject();
+				value = replicaMap.get(key);
+				if (value != null) {
+					objOut.writeObject(value);
 					hasReply = true;
-					break;
+				}
+				break;
+			case REMOVE:
+				key = (K) objIn.readObject();
+				value = replicaMap.remove(key);
+				if (value != null) {
+					objOut.writeObject(value);
+					hasReply = true;
+				}
+				break;
+			case SIZE:
+				int size = replicaMap.size();
+				objOut.writeInt(size);
+				hasReply = true;
+				break;
+			case KEYSET:
+				keySet(objOut);
+				hasReply = true;
+				break;
 			}
 			if (hasReply) {
 				objOut.flush();
@@ -111,27 +118,27 @@ public class MapServer<K, V> extends DefaultSingleRecoverable {
 				ObjectInput objIn = new ObjectInputStream(byteIn);
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
-			MapRequestType reqType = (MapRequestType)objIn.readObject();
+			KeyValueStoreType reqType = (KeyValueStoreType) objIn.readObject();
 			switch (reqType) {
-				case GET:
-					key = (K)objIn.readObject();
-					value = replicaMap.get(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case SIZE:
-					int size = replicaMap.size();
-					objOut.writeInt(size);
+			case GET:
+				key = (K) objIn.readObject();
+				value = replicaMap.get(key);
+				if (value != null) {
+					objOut.writeObject(value);
 					hasReply = true;
-					break;
-				case KEYSET:
-					keySet(objOut);
-					hasReply = true;
-					break;
-				default:
-					logger.log(Level.WARNING, "in appExecuteUnordered only read operations are supported");
+				}
+				break;
+			case SIZE:
+				int size = replicaMap.size();
+				objOut.writeInt(size);
+				hasReply = true;
+				break;
+			case KEYSET:
+				keySet(objOut);
+				hasReply = true;
+				break;
+			default:
+				logger.log(Level.WARNING, "in appExecuteUnordered only read operations are supported");
 			}
 			if (hasReply) {
 				objOut.flush();
@@ -172,9 +179,10 @@ public class MapServer<K, V> extends DefaultSingleRecoverable {
 	public void installSnapshot(byte[] state) {
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(state);
 				ObjectInput objIn = new ObjectInputStream(byteIn)) {
-			replicaMap = (Map<K, V>)objIn.readObject();
+			replicaMap = (ConcurrentHashMap<K, V>) objIn.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, "Error while installing snapshot", e);
 		}
 	}
+
 }
