@@ -66,6 +66,16 @@ public abstract class ParallelRecovery implements Recoverable, SingleExecutable 
     public void setIsJunit(boolean isJunit) {
     	this.isJunit = isJunit;
     }
+
+    private int numberOfThreads;
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public void setNumberOfThreads(int numberOfThreads) {
+        this.numberOfThreads = numberOfThreads;
+    }
+
     
     public ParallelRecovery() {
 

@@ -61,18 +61,9 @@ public final class CounterServerFuture extends ParallelRecovery {
 
 	private AtomicInteger counter = new AtomicInteger(0);
 	private AtomicInteger iterations = new AtomicInteger(0);
-	private int numberOfThreads;
 	private Stats stats;
 	private MetricRegistry metrics;
 	boolean logMetrics = false;
-	
-	public int getNumberOfThreads() {
-		return numberOfThreads;
-	}
-
-	public void setNumberOfThreads(int numberOfThreads) {
-		this.numberOfThreads = numberOfThreads;
-	}
 
 	public CounterServerFuture() {
 		File path = createMetricsDirectory();
@@ -249,21 +240,16 @@ public final class CounterServerFuture extends ParallelRecovery {
 			stateLock.lock();
 			installSnapshot(state.getState());
 			Stopwatch stopwatch = Stopwatch.createStarted();
-			// TODO Mover para o arquivo de configuração
+			// TODO: Mover para o arquivo de configuração
 			// int nThreads = 5;
 			// ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads,
 			// ForkJoinPool.defaultForkJoinWorkerThreadFactory,null, true, nThreads,
 			// nThreads, 0, null, 60, TimeUnit.SECONDS);
-			ForkJoinPool pool = new ForkJoinPool(this.numberOfThreads);
-			RecoveryDispatcher pooledScheduler = new RecoveryDispatcher(pool, metrics);
-			//PooledScheduler2 pooledScheduler = new PooledScheduler2(pool, metrics);
+			ForkJoinPool pool = new ForkJoinPool(this.getNumberOfThreads());
+			RecoveryDispatcher recoveryDispatcher = new RecoveryDispatcher(pool, metrics);
 
 			logger.debug("Pool parallelism " + pool.getParallelism());
-			logger.debug("Pool size " + pool.getPoolSize());
-			logger.debug("Pool Active Thread Count " + pool.getActiveThreadCount());
-			// pooledScheduler.setExecutor(a ->
-			// System.out.println(Thread.currentThread().getName() + " - " +a));
-			pooledScheduler.setExecutor(this::newAppExecuteOrdered);
+			recoveryDispatcher.setExecutor(this::newAppExecuteOrdered);
 
 			for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
 				try {
@@ -271,7 +257,7 @@ public final class CounterServerFuture extends ParallelRecovery {
 					List<CounterCommand> commandList = state.getMessageListBatch(cid);
 
 					for (CounterCommand counterCommand : commandList) {
-						pooledScheduler.post(counterCommand);
+						recoveryDispatcher.post(counterCommand);
 						stats.workloadSize.inc();
 					}
 				} catch (Exception e) {

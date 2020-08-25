@@ -15,6 +15,8 @@ import com.codahale.metrics.MetricRegistry;
 
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RecoveryDispatcher {
 
@@ -40,11 +42,11 @@ public class RecoveryDispatcher {
 		}
 	}
 
-	// private final int nThreads;
 	private final ExecutorService pool;
 	private final Semaphore space;
 	private List<Task> scheduled;
 	private Stats stats;
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private Consumer<CounterCommand> executor;
 
@@ -85,15 +87,14 @@ public class RecoveryDispatcher {
 			while (iterator.hasNext()) {
 				Task task = iterator.next();
 				if (task.future.isDone()) {
+					logger.debug(">>> removing task " + task.counterCommand);
 					iterator.remove();
 					continue;
 				}
 
 				if (newTask.counterCommand.isDependent(task.counterCommand)) {
-					// if (task.command.isDependent(newTask.command)) {
 					dependencies.add(task.future);
-					// System.out.println(">>> dependency added from " + newTask.command + "to "+
-					// task.command);
+					logger.debug(">>> dependency added from " + newTask.counterCommand + "to "+ task.counterCommand);
 					stats.commandWithConflict.inc();
 				}
 			}
@@ -105,8 +106,10 @@ public class RecoveryDispatcher {
 	private void submit(Task newTask, List<CompletableFuture<Void>> dependencies) {
 		if (dependencies.isEmpty()) {
 			// stats.ready.inc();
+			logger.debug(">>> running pool execute "+ newTask.counterCommand);
 			pool.execute(() -> execute(newTask));
 		} else {
+			logger.debug(">>> running cf.allof() "+ newTask.counterCommand);
 			after(dependencies).thenRun(() -> {
 				// stats.ready.inc();
 				execute(newTask);
@@ -117,8 +120,8 @@ public class RecoveryDispatcher {
 	private static CompletableFuture<Void> after(List<CompletableFuture<Void>> fs) {
 		if (fs.size() == 1)
 			return fs.get(0); // fast path
-
-		CompletableFuture<Void> allFutures = CompletableFuture.allOf(fs.toArray(new CompletableFuture[fs.size()]));
+		CompletableFuture[] cfDependencies = fs.toArray(new CompletableFuture[fs.size()]);
+		CompletableFuture<Void> allFutures = CompletableFuture.allOf(cfDependencies);
 
 		return allFutures;
 	}
@@ -130,5 +133,4 @@ public class RecoveryDispatcher {
 		// stats.size.dec();
 		task.future.complete(null);
 	}
-
 }

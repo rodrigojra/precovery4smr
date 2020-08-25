@@ -9,10 +9,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
+import bftsmart.parallel.recovery.demo.counter.CounterCommand;
+import bftsmart.parallel.recovery.demo.counter.CounterServerFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.ArgumentMatchers;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -28,21 +32,17 @@ import bftsmart.tom.util.TOMUtil;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CounterGuajaGraphRecoveryTest {
-/*
+
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
 	private int LAST_CID;
 	private int CHECKPOINT_CID;
 	private int INCREMENT_VALUE;
+	private CounterServerGuajaGraph countServerRecovery;
+	private GraphApplicationState recvState;
+	private int THREAD_POOL_SIZE;
+	private int conflictProbabilityPercentage;
 
-	@Before
-	public void setUp() throws Exception {
-		COMMANDS_PER_BATCH = 10000;
-		BATCH_SIZE = 10;
-		CHECKPOINT_CID = 0;
-		LAST_CID = BATCH_SIZE;
-		INCREMENT_VALUE = 1;
-	}
 
 	@Test
 	public final void testSetStateGuajaGraphNoDep() throws NoSuchAlgorithmException {
@@ -74,9 +74,9 @@ public class CounterGuajaGraphRecoveryTest {
 
 		// MessageContext[] msgCtxs = new MessageContext[COMMANDS_PER_BATCH];
 		// byte [][] commands = new byte[COMMANDS_PER_BATCH][1];
-		
+
 		MutableGraph<CounterCommand> graph = GraphBuilder.directed().build();
-		
+
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(4);
 			try {
@@ -87,7 +87,7 @@ public class CounterGuajaGraphRecoveryTest {
 			}
 			MessageContext msgContext = mock(MessageContext.class);
 			when(msgContext.isNoOp()).thenReturn(false);
-			
+
 			CounterCommand command = new CounterCommand(i, out.toByteArray(), msgContext);
 			graph.addNode(command);
 		}
@@ -99,5 +99,4 @@ public class CounterGuajaGraphRecoveryTest {
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
 	}
-	*/
 }

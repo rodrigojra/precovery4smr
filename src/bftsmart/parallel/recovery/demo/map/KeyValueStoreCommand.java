@@ -1,6 +1,3 @@
-/**
- * 
- */
 package bftsmart.parallel.recovery.demo.map;
 
 import bftsmart.parallel.late.ConflictDefinition;
@@ -10,7 +7,7 @@ import bftsmart.parallel.recovery.Command;
  * @author Rodrigo Antunes
  *
  */
-public class KeyValueStoreCommand extends Command  implements ConflictDefinition<KeyValueStoreCommand>   {
+public class KeyValueStoreCommand extends Command implements ConflictDefinition<KeyValueStoreCommand> {
 	
 	private KeyValueStoreType type;
 	private Integer key;

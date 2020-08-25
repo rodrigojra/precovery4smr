@@ -2,7 +2,6 @@ package bftsmart.parallel.late.graph;
 
 import java.util.concurrent.Semaphore;
 
-import bftsmart.parallel.MessageContextPair;
 import bftsmart.parallel.late.ConflictDefinition;
 
 /*

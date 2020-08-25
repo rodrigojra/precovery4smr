@@ -9,10 +9,8 @@ package bftsmart.parallel.late;
  *
  * @author Rodrigo Antunes
  */
-public  interface ConflictDefinition<T> {
+public interface ConflictDefinition<T> {
 
-     //public boolean isDependent(T r1, T r2);
-     
      public boolean isDependent(T r2);
     
 }

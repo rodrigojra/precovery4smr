@@ -362,4 +362,5 @@ public abstract class SequentialRecovery implements Recoverable, SingleExecutabl
      * @return the reply for the request issued by the client
      */
     public abstract byte[] appExecuteUnordered(byte[] command, MessageContext msgCtx);
+
 }

@@ -6,9 +6,7 @@ package bftsmart.parallel.recovery;
 import java.util.Arrays;
 
 import com.google.common.base.Objects;
-
 import bftsmart.tom.MessageContext;
-
 /**
  * @author Rodrigo Antunes
  *

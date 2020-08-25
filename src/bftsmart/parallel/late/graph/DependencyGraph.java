@@ -8,8 +8,6 @@ package bftsmart.parallel.late.graph;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import bftsmart.parallel.MessageContextPair;
-
 
 /**
  *
