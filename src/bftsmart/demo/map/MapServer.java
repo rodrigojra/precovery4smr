@@ -20,6 +20,8 @@ import bftsmart.tom.server.defaultservices.DefaultSingleRecoverable;
 public class MapServer<K, V> extends DefaultSingleRecoverable {
 
 	private Map<K, V> replicaMap;
+
+
 	private Logger logger;
 
 	public MapServer(int id) {

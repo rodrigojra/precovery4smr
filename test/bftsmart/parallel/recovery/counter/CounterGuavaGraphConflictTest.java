@@ -1,5 +1,6 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.counter;
 
+import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterServerGuajaGraph;
 import bftsmart.reconfiguration.util.TOMConfiguration;

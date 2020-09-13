@@ -1,28 +1,10 @@
 package bftsmart.parallel;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Stopwatch;
-
-import bftsmart.tom.MessageContext;
-
 public class SmallTests {
-/*
+
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -33,7 +15,7 @@ public class SmallTests {
 		int coreCount = Runtime.getRuntime().availableProcessors();
 		System.out.println("testAvailableProcessors coreCount: " + coreCount);
 	}	
-	
+	/*	
 	@Test
 	public final void testConsumer() {
 		

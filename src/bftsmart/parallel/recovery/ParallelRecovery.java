@@ -205,9 +205,7 @@ public abstract class ParallelRecovery implements Recoverable, SingleExecutable 
     public int setState(ApplicationState recvState) {
         int lastCID = -1;
         if (recvState instanceof DefaultApplicationState) {
-            
             DefaultApplicationState state = (DefaultApplicationState) recvState;
-            
             logger.info("Last CID in state: " + state.getLastCID());
             
             logLock.lock();
@@ -215,22 +213,16 @@ public abstract class ParallelRecovery implements Recoverable, SingleExecutable 
                 initLog();
                 log.update(state);
             }
+            
             logLock.unlock();
-            
             int lastCheckpointCID = state.getLastCheckpointCID();
-            
             lastCID = state.getLastCID();
 
-            logger.debug("I'm going to update myself from CID "
-                    + lastCheckpointCID + " to CID " + lastCID);
-
+            logger.debug("I'm going to update myself from CID " + lastCheckpointCID + " to CID " + lastCID);
             stateLock.lock();
             installSnapshot(state.getState());
-            
             Stopwatch stopwatch = Stopwatch.createStarted();
-            /// inserir no gapho ... criar um objeto c- comandos e o contexto
-            // 
-            //
+
             for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
                 try {
                     logger.debug("Processing and verifying batched requests for CID " + cid);

@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.keyvaluestore;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -25,6 +25,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
+import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand.Type;
 import bftsmart.parallel.recovery.demo.counter.CounterServerFuture;
@@ -35,7 +36,7 @@ import bftsmart.tom.util.TOMUtil;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
-public class CSFutureConflictTest {
+public class KVSConflictTest {
 
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
@@ -48,7 +49,7 @@ public class CSFutureConflictTest {
 	private int conflictProbabilityPercentage;
 	
 	
-	public  CSFutureConflictTest(int workloadSize, int conflictProbabilityPercentage) {
+	public KVSConflictTest(int workloadSize, int conflictProbabilityPercentage) {
 		super();
 		this.COMMANDS_PER_BATCH = workloadSize;
 		this.conflictProbabilityPercentage = conflictProbabilityPercentage;

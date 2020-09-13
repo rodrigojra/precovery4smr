@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.counter;
 
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;

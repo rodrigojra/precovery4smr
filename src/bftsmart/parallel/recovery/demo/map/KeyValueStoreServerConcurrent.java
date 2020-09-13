@@ -18,16 +18,16 @@ import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
 
-public class KeyValueStoreServer extends ParallelRecovery {
+public class KeyValueStoreServerConcurrent extends ParallelRecovery {
 
 	private ConcurrentHashMap<Integer, Integer> replicaMap;
-	private static final Logger logger = Logger.getLogger(KeyValueStoreServer.class.getName());
+	private static final Logger logger = Logger.getLogger(KeyValueStoreServerConcurrent.class.getName());
 	private AtomicInteger iterations = new AtomicInteger(0);
 
-	public KeyValueStoreServer() {
+	public KeyValueStoreServerConcurrent() {
 	}
 
-	public KeyValueStoreServer(int id) {
+	public KeyValueStoreServerConcurrent(int id) {
 		replicaMap = new ConcurrentHashMap<Integer, Integer>(0);
 		new ServiceReplica(id, this, this);
 	}
@@ -37,7 +37,7 @@ public class KeyValueStoreServer extends ParallelRecovery {
 			System.out.println("Usage: demo.map.MapServer <server id>");
 			System.exit(-1);
 		}
-		new KeyValueStoreServer(Integer.parseInt(args[0]));
+		new KeyValueStoreServerConcurrent(Integer.parseInt(args[0]));
 	}
 
 	@Override

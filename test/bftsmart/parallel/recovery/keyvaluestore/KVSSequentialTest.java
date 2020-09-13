@@ -1,16 +1,18 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.keyvaluestore;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +24,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 
-import bftsmart.demo.counter.CounterServer;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreCmd;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreServer;
 import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.server.defaultservices.CommandsInfo;
@@ -32,27 +35,29 @@ import bftsmart.tom.util.TOMUtil;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
-public class CounterServerSequentialTest {
+public class KVSSequentialTest {
 
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;
 	private int LAST_CID;
 	private int CHECKPOINT_CID;
-	
-	public CounterServerSequentialTest(int workloadSize) {
+	float sparseness;
+
+	public KVSSequentialTest(int workloadSize, float sparseness) {
 		super();
 		this.COMMANDS_PER_BATCH = workloadSize;
+		this.sparseness = sparseness;
 	}
 
 	@Parameters
 	public static Collection<Object[]> workloadSize() {
 		return Arrays.asList(new Object[][] {
-				//Workload size
-				{ 5000  }, 
-				{ 10000 },
-				{ 20000 }
-		});
-	}	
+				// Workload size "0.01" "0.05" "0.1" "0.25" "0.5" "1"
+				{ 5000, Float.parseFloat("0.1")}//,  { 5000, Float.parseFloat("0.2")},  { 5000, Float.parseFloat("0.3")},  { 5000, Float.parseFloat("0.4")},  { 5000, Float.parseFloat("0.5")}, 
+//				{ 10000, Float.parseFloat("0.1")}, { 10000, Float.parseFloat("0.2")}, { 10000, Float.parseFloat("0.3")}, { 10000, Float.parseFloat("0.4")}, { 10000, Float.parseFloat("0.5")},
+//				{ 20000, Float.parseFloat("0.1")}, { 20000, Float.parseFloat("0.2")}, { 20000, Float.parseFloat("0.3")}, { 20000, Float.parseFloat("0.4")}, { 20000, Float.parseFloat("0.5")} 
+				});
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -64,7 +69,7 @@ public class CounterServerSequentialTest {
 
 	@Test
 	public final void testSetState() throws NoSuchAlgorithmException {
-		CounterServer countServerRecovery = new CounterServer();
+		KeyValueStoreServer recovery = new KeyValueStoreServer();
 		MessageDigest md = mock(MessageDigest.class);
 		mockStatic(TOMUtil.class);
 		when(TOMUtil.getHashEngine()).thenReturn(md);
@@ -73,46 +78,38 @@ public class CounterServerSequentialTest {
 		when(recvState.getLastCID()).thenReturn(LAST_CID);
 		when(recvState.getLastCheckpointCID()).thenReturn(CHECKPOINT_CID);
 		byte[] state = null;
-
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4);
+		ConcurrentHashMap<Integer, Integer> replicaMap = new ConcurrentHashMap<>(0);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ObjectOutputStream oos;
 		try {
-			new DataOutputStream(outputStream).writeInt(0);
+			oos = new ObjectOutputStream(outputStream);
+			oos.writeObject(replicaMap);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		state = outputStream.toByteArray();
+        state = outputStream.toByteArray();
 		when(recvState.getState()).thenReturn(state);
 
 		TOMConfiguration configMock = mock(TOMConfiguration.class);
 		when(configMock.getCheckpointPeriod()).thenReturn(1000);
 		when(configMock.isToLog()).thenReturn(false);
-		countServerRecovery.setConfig(configMock);
-		countServerRecovery.setIsJunit(true);
+		
+		recovery.setConfig(configMock);
+		recovery.setIsJunit(true);
 
 		CommandsInfo cmdInfo = new CommandsInfo();
 		MessageContext[] msgCtxs = new MessageContext[COMMANDS_PER_BATCH];
 		byte[][] commands = new byte[COMMANDS_PER_BATCH][1];
-		int incrementValue = 1;
 
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		int maxKey = COMMANDS_PER_BATCH;
+		float conflict = Float.parseFloat("1");
+		
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
-			for (int j = 0; j < 1; j++) {
-				ByteArrayOutputStream out = new ByteArrayOutputStream(4);
-				try {
-					new DataOutputStream(out).writeInt(incrementValue);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				commands[i] = out.toByteArray();
-			}
+			KeyValueStoreCmd cmd = KeyValueStoreCmd.random(random, maxKey, sparseness, conflict);
+			commands[i] = cmd.encode();
 		}
-
-		/*
-		 * for (int i = 0; i < commands.length; i++) { for (int j = 0; j <
-		 * commands[i].length; j++) { System.out.print(commands[i][j] + " "); }
-		 * System.out.println(); }
-		 */
 
 		for (int i = 0; i < COMMANDS_PER_BATCH; i++) {
 			msgCtxs[i] = mock(MessageContext.class);
@@ -122,9 +119,9 @@ public class CounterServerSequentialTest {
 		cmdInfo.msgCtx = msgCtxs;
 		when(msgCtxs[0].isNoOp()).thenReturn(false);
 		when(recvState.getMessageBatch(ArgumentMatchers.any(Integer.class))).thenReturn(cmdInfo);
-		countServerRecovery.setState(recvState);
-		System.out.println(">> counter: " + countServerRecovery.getCounter());
-		System.out.println(">> iterations: " + countServerRecovery.getIterations());
+		recovery.setState(recvState);
+//		System.out.println(">> counter: " + recovery.getCounter());
+		System.out.println(">> iterations: " + recovery.getIterations());
 
 	}
 }

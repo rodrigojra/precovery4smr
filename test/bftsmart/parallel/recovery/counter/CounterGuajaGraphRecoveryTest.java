@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.counter;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
+import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
 import bftsmart.parallel.recovery.demo.counter.CounterServerFuture;
 import org.junit.Before;

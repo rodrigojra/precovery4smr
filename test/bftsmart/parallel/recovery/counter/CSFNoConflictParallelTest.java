@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.counter;
 
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
