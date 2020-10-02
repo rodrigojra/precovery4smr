@@ -1,5 +1,6 @@
 package bftsmart.parallel.recovery.counter;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -7,6 +8,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "bftsmart.*")
 public class CounterServerCOSRecoveryTest {
+	
+	@Test
+	public void testHello() {
+		System.out.println("No valid test file");
+	}
+	
 /*
 	private int COMMANDS_PER_BATCH;
 	private int BATCH_SIZE;

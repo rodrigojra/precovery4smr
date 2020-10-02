@@ -53,7 +53,7 @@ public class KVSSequentialTest {
 	public static Collection<Object[]> workloadSize() {
 		return Arrays.asList(new Object[][] {
 				// Workload size "0.01" "0.05" "0.1" "0.25" "0.5" "1"
-				{ 5000, Float.parseFloat("0.1")}//,  { 5000, Float.parseFloat("0.2")},  { 5000, Float.parseFloat("0.3")},  { 5000, Float.parseFloat("0.4")},  { 5000, Float.parseFloat("0.5")}, 
+				{ 10, Float.parseFloat("0.1")}//,  { 5000, Float.parseFloat("0.2")},  { 5000, Float.parseFloat("0.3")},  { 5000, Float.parseFloat("0.4")},  { 5000, Float.parseFloat("0.5")}, 
 //				{ 10000, Float.parseFloat("0.1")}, { 10000, Float.parseFloat("0.2")}, { 10000, Float.parseFloat("0.3")}, { 10000, Float.parseFloat("0.4")}, { 10000, Float.parseFloat("0.5")},
 //				{ 20000, Float.parseFloat("0.1")}, { 20000, Float.parseFloat("0.2")}, { 20000, Float.parseFloat("0.3")}, { 20000, Float.parseFloat("0.4")}, { 20000, Float.parseFloat("0.5")} 
 				});

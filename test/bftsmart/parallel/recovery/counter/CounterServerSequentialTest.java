@@ -48,9 +48,10 @@ public class CounterServerSequentialTest {
 	public static Collection<Object[]> workloadSize() {
 		return Arrays.asList(new Object[][] {
 				//Workload size
+				{ 10  }/*,
 				{ 5000  }, 
 				{ 10000 },
-				{ 20000 }
+				{ 20000 }*/
 		});
 	}	
 
