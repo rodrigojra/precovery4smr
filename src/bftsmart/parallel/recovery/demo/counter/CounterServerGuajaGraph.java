@@ -33,12 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import bftsmart.parallel.recovery.ParallelRecovery;
-import bftsmart.parallel.recovery.RecoveryDispatcher;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.graph.MutableGraph;
 
 import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.SequentialRecovery;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreCmd;
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
@@ -271,4 +272,10 @@ public final class CounterServerGuajaGraph extends ParallelRecovery {
 
         return lastCID;
     }
+
+	@Override
+	public byte[] newAppExecuteOrdered(KeyValueStoreCmd cmd) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

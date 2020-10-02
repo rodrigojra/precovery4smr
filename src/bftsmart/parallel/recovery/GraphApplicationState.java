@@ -25,6 +25,7 @@ import com.google.common.graph.MutableGraph;
 import bftsmart.consensus.messages.ConsensusMessage;
 import bftsmart.parallel.late.graph.COS;
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreCmd;
 import bftsmart.reconfiguration.ServerViewController;
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.tom.core.messages.TOMMessage;
@@ -73,10 +74,14 @@ public class GraphApplicationState implements ApplicationState {
     	return null;
     }
     
-    public List<CounterCommand> getMessageListBatch(int cid) {
+    public List<CounterCommand> getMessageListBatch1(int cid) {
     	return null;
     }    
 
+    public List<KeyValueStoreCmd> getMessageListBatch(int cid) {
+    	return null;
+    }
+    
     /**
      * Constructs a TansferableState
      * This constructor should be used when there is a valid state to construct the object with

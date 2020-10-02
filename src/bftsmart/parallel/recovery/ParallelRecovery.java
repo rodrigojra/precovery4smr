@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Stopwatch;
 
 import bftsmart.parallel.recovery.demo.counter.CounterCommand;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreCmd;
 import bftsmart.reconfiguration.ServerViewController;
 import bftsmart.reconfiguration.util.TOMConfiguration;
 import bftsmart.statemanagement.ApplicationState;
@@ -357,6 +358,8 @@ public abstract class ParallelRecovery implements Recoverable, SingleExecutable 
     public abstract byte[] appExecuteOrdered(byte[] command, MessageContext msgCtx);
     
     public abstract byte[] newAppExecuteOrdered(CounterCommand counterCommand);
+    
+    public abstract byte[] newAppExecuteOrdered(KeyValueStoreCmd cmd);
     
     /**
      * Execute an unordered request

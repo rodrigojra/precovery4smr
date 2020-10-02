@@ -16,8 +16,7 @@ public class KeyValueStoreCmd implements ConflictDefinition<KeyValueStoreCmd> {
 
 	@Override
 	public boolean isDependent(KeyValueStoreCmd r2) {
-		// TODO Auto-generated method stub
-		return false;
+		return conflictWith(r2);
 	}
 
     KeyValueStoreType getType() {

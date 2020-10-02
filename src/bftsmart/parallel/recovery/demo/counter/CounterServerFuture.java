@@ -43,7 +43,7 @@ import com.google.common.base.Stopwatch;
 
 import bftsmart.parallel.recovery.GraphApplicationState;
 import bftsmart.parallel.recovery.ParallelRecovery;
-import bftsmart.parallel.recovery.RecoveryDispatcher;
+import bftsmart.parallel.recovery.demo.map.KeyValueStoreCmd;
 import bftsmart.statemanagement.ApplicationState;
 import bftsmart.tom.MessageContext;
 import bftsmart.tom.ServiceReplica;
@@ -254,7 +254,7 @@ public final class CounterServerFuture extends ParallelRecovery {
 			for (int cid = lastCheckpointCID + 1; cid <= lastCID; cid++) {
 				try {
 					logger.debug("Processing and verifying batched requests for CID " + cid);
-					List<CounterCommand> commandList = state.getMessageListBatch(cid);
+					List<CounterCommand> commandList = state.getMessageListBatch1(cid);
 
 					for (CounterCommand counterCommand : commandList) {
 						recoveryDispatcher.post(counterCommand);
@@ -301,4 +301,10 @@ public final class CounterServerFuture extends ParallelRecovery {
         	commands = metrics.meter(name(CounterServerFuture.class, "commands"));
         }
     }
+
+	@Override
+	public byte[] newAppExecuteOrdered(KeyValueStoreCmd cmd) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

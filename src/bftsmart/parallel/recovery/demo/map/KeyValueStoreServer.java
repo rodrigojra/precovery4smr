@@ -103,4 +103,10 @@ public class KeyValueStoreServer extends ParallelRecovery {
 	public int getIterations() {
 		return iterations.get();
 	}
+
+	@Override
+	public byte[] newAppExecuteOrdered(KeyValueStoreCmd cmd) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

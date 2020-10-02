@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery;
+package bftsmart.parallel.recovery.demo.map;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -13,21 +13,19 @@ import java.util.function.Consumer;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 
-import bftsmart.parallel.recovery.demo.counter.CounterCommand;
-import bftsmart.parallel.recovery.demo.counter.CounterCommand.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RecoveryDispatcher {
+public class RecoveryDispatcherKVS {
 
 	private static final int MAX_SIZE = 5000;
 
 	private static final class Task {
-		private final CounterCommand counterCommand;
+		private final KeyValueStoreCmd cmd;
 		private final CompletableFuture<Void> future;
 
-		Task(CounterCommand counterCommand) {
-			this.counterCommand = counterCommand;
+		Task(KeyValueStoreCmd cmd) {
+			this.cmd = cmd;
 			this.future = new CompletableFuture<Void>();
 		}
 	}
@@ -37,7 +35,7 @@ public class RecoveryDispatcher {
 		// final Counter ready;
 
 		Stats(MetricRegistry metrics) {
-			commandWithConflict = metrics.counter(name(RecoveryDispatcher.class, "commandWithConflict"));
+			commandWithConflict = metrics.counter(name(RecoveryDispatcherKVS.class, "commandWithConflict"));
 			// ready = metrics.counter(name(PooledScheduler.class, "ready"));
 		}
 	}
@@ -48,9 +46,9 @@ public class RecoveryDispatcher {
 	private Stats stats;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private Consumer<CounterCommand> executor;
+	private Consumer<KeyValueStoreCmd> executor;
 
-	public RecoveryDispatcher(/* int nThreads, */ ExecutorService pool, MetricRegistry metrics) {
+	public RecoveryDispatcherKVS(/* int nThreads, */ ExecutorService pool, MetricRegistry metrics) {
 		// this.nThreads = nThreads;
 		this.space = new Semaphore(MAX_SIZE);
 		this.scheduled = new LinkedList<>();
@@ -59,23 +57,23 @@ public class RecoveryDispatcher {
 	}
 
 	// Breaks cyclic dependency with PooledServiceReplica
-	public void setExecutor(Consumer<CounterCommand> executor) {
+	public void setExecutor(Consumer<KeyValueStoreCmd> executor) {
 		this.executor = executor;
 	}
 
 //    @Override
-	public void post(CounterCommand counterCommand) {
+	public void post(KeyValueStoreCmd cmd) {
 		try {
 			space.acquire();
 			// stats.size.inc();
-			doSchedule(counterCommand);
+			doSchedule(cmd);
 		} catch (Exception e) {
 			// Ignored.
 		}
 	}
 
-	private void doSchedule(CounterCommand counterCommand) {
-		Task newTask = new Task(counterCommand);
+	private void doSchedule(KeyValueStoreCmd cmd) {
+		Task newTask = new Task(cmd);
 		submit(newTask, addTask(newTask));
 	}
 
@@ -83,18 +81,18 @@ public class RecoveryDispatcher {
 		List<CompletableFuture<Void>> dependencies = new LinkedList<>();
 		ListIterator<Task> iterator = scheduled.listIterator();
 
-		if (newTask.counterCommand.getType() == Type.CONFLICT) {
+		if (newTask.cmd.getType().isWrite) {
 			while (iterator.hasNext()) {
 				Task task = iterator.next();
 				if (task.future.isDone()) {
-					logger.debug(">>> removing task " + task.counterCommand);
+					logger.debug(">>> removing task " + task.cmd);
 					iterator.remove();
 					continue;
 				}
 
-				if (newTask.counterCommand.isDependent(task.counterCommand)) {
+				if (newTask.cmd.isDependent(task.cmd)) {
 					dependencies.add(task.future);
-					logger.debug(">>> dependency added from " + newTask.counterCommand + "to "+ task.counterCommand);
+					logger.debug(">>> dependency added from " + newTask.cmd + "to "+ task.cmd);
 					stats.commandWithConflict.inc();
 				}
 			}
@@ -106,10 +104,10 @@ public class RecoveryDispatcher {
 	private void submit(Task newTask, List<CompletableFuture<Void>> dependencies) {
 		if (dependencies.isEmpty()) {
 			// stats.ready.inc();
-			logger.debug(">>> running pool execute "+ newTask.counterCommand);
+			logger.debug(">>> running pool execute "+ newTask.cmd);
 			pool.execute(() -> execute(newTask));
 		} else {
-			logger.debug(">>> running cf.allof() "+ newTask.counterCommand);
+			logger.debug(">>> running cf.allof() "+ newTask.cmd);
 			after(dependencies).thenRun(() -> {
 				// stats.ready.inc();
 				execute(newTask);
@@ -127,7 +125,7 @@ public class RecoveryDispatcher {
 	}
 
 	private void execute(Task task) {
-		executor.accept(task.counterCommand);
+		executor.accept(task.cmd);
 		space.release();
 		// stats.ready.dec();
 		// stats.size.dec();

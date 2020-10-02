@@ -118,7 +118,7 @@ public class CSFNoConflictParallelTest {
 			commandList.add(counterCommand);
 		}
 
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
+		when(recvState.getMessageListBatch1(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
 		countServerRecovery.setState(recvState);
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());

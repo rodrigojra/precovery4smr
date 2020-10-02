@@ -107,7 +107,7 @@ public class CSFutureConflictTest {
 		System.out.println("********* Workload ["+ COMMANDS_PER_BATCH + "] Conflict Probability Percentage ["+ this.conflictProbabilityPercentage + "%] *********");
 		List<CounterCommand> commandList = new ArrayList<CounterCommand>(1);
 		generateCommandListConflictProbabilityBased(commandList);
-		when(recvState.getMessageListBatch(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
+		when(recvState.getMessageListBatch1(ArgumentMatchers.any(Integer.class))).thenReturn(commandList);
 		countServerRecovery.setState(recvState);
 		System.out.println(">> counter: " + countServerRecovery.getCounter());
 		System.out.println(">> iterations: " + countServerRecovery.getIterations());
