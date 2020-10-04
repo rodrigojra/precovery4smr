@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>precovery4smr</groupId>
 	<artifactId>precovery4smr</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	
 	<properties>
 		<java.version>11</java.version>
