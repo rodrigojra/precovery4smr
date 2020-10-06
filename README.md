@@ -99,3 +99,19 @@ If you are interested in learning more about BFT-SMaRt, you can read:
 - The tool description published in [DSN'14](http://www.di.fc.ul.pt/~bessani/publications/dsn14-bftsmart.pdf):
 
 ***Feel free to contact us if you have any questions!***
+## Parallel Recovery
+### Sequential Key-Value Store Application
+#### Replica
+
+```
+./runscripts/smartrun.sh bftsmart.parallel.recovery.demo.kvs.KSVServer 0
+./runscripts/smartrun.sh bftsmart.parallel.recovery.demo.kvs.KSVServer 1
+./runscripts/smartrun.sh bftsmart.parallel.recovery.demo.kvs.KSVServer 2
+./runscripts/smartrun.sh bftsmart.parallel.recovery.demo.kvs.KSVServer 3
+```
+#### Client
+
+```
+./runscripts/smartrun.sh bftsmart.parallel.recovery.demo.kvs.KVSNewClient 1001 <conflict percentage> [<workload size>]
+```
+
