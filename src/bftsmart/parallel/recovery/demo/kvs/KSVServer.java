@@ -29,60 +29,78 @@ public class KSVServer extends DefaultSingleRecoverable {
 
 	public static void main(String[] args) {
 		if (args.length < 1) {
-			System.out.println("Usage: demo.map.MapServer <server id>");
+			System.out.println("Usage: bftsmart.parallel.recovery.demo.kvs.KSVServer <server id>");
 			System.exit(-1);
 		}
 		new KSVServer(Integer.parseInt(args[0]));
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public byte[] appExecuteOrdered(byte[] command, MessageContext msgCtx) {
 		byte[] reply = null;
 		Integer key = null;
 		Integer value = null;
 		boolean hasReply = false;
+		System.out.println(">> received bytes");
+		KVSUtils.printBytes(command);
+		
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(command);
 				ObjectInput objIn = new ObjectInputStream(byteIn);
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
-			KVSRequestType reqType = (KVSRequestType)objIn.readObject();
+			KVSRequestType reqType = (KVSRequestType) objIn.readObject();
+			System.out.println(">>>>> reqType "+reqType);
 			switch (reqType) {
-				case PUT:
-					key = (Integer)objIn.readObject();
-					value = (Integer)objIn.readObject();
+			case PUT:
+				key = (Integer) objIn.readObject();
+				value = (Integer) objIn.readObject();
+				KVSUtils.printOperationData(reqType, key, value);
 
-					Integer oldValue = replicaMap.put(key, value);
-					if (oldValue != null) {
-						objOut.writeObject(oldValue);
-						hasReply = true;
-					}
-					break;
-				case GET:
-					key = (Integer)objIn.readObject();
-					value = replicaMap.get(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case REMOVE:
-					key = (Integer)objIn.readObject();
-					value = replicaMap.remove(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case SIZE:
-					int size = replicaMap.size();
-					objOut.writeInt(size);
+				Integer oldValue = replicaMap.put(key, value);
+				hasReply = true;
+				if (oldValue != null) {
+					objOut.writeObject(oldValue);
+					
+				} else {
+					objOut.writeObject(value);
+				}
+				break;
+			case GET:
+				key = (Integer) objIn.readObject();
+
+				KVSUtils.printOperationData(reqType, key, -1);
+
+				value = replicaMap.get(key);
+
+				if (value != null) {
+					objOut.writeObject(value);
 					hasReply = true;
-					break;
-				case KEYSET:
-					keySet(objOut);
+				}
+				break;
+			case REMOVE:
+				key = (Integer) objIn.readObject();
+
+				KVSUtils.printOperationData(reqType, key, -1);
+
+				value = replicaMap.remove(key);
+
+				if (value != null) {
+					objOut.writeObject(value);
 					hasReply = true;
-					break;
+				}
+				break;
+			case SIZE:
+				KVSUtils.printOperationData(reqType, -1, -1);
+
+				int size = replicaMap.size();
+				objOut.writeInt(size);
+				hasReply = true;
+				break;
+			case KEYSET:
+				keySet(objOut);
+				hasReply = true;
+				break;
 			}
 			if (hasReply) {
 				objOut.flush();
@@ -98,7 +116,6 @@ public class KSVServer extends DefaultSingleRecoverable {
 		return reply;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public byte[] appExecuteUnordered(byte[] command, MessageContext msgCtx) {
 		byte[] reply = null;
@@ -110,27 +127,27 @@ public class KSVServer extends DefaultSingleRecoverable {
 				ObjectInput objIn = new ObjectInputStream(byteIn);
 				ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
 				ObjectOutput objOut = new ObjectOutputStream(byteOut);) {
-			KVSRequestType reqType = (KVSRequestType)objIn.readObject();
+			KVSRequestType reqType = (KVSRequestType) objIn.readObject();
 			switch (reqType) {
-				case GET:
-					key = (Integer)objIn.readObject();
-					value = replicaMap.get(key);
-					if (value != null) {
-						objOut.writeObject(value);
-						hasReply = true;
-					}
-					break;
-				case SIZE:
-					int size = replicaMap.size();
-					objOut.writeInt(size);
+			case GET:
+				key = (Integer) objIn.readObject();
+				value = replicaMap.get(key);
+				if (value != null) {
+					objOut.writeObject(value);
 					hasReply = true;
-					break;
-				case KEYSET:
-					keySet(objOut);
-					hasReply = true;
-					break;
-				default:
-					logger.log(Level.WARNING, "in appExecuteUnordered only read operations are supported");
+				}
+				break;
+			case SIZE:
+				int size = replicaMap.size();
+				objOut.writeInt(size);
+				hasReply = true;
+				break;
+			case KEYSET:
+				keySet(objOut);
+				hasReply = true;
+				break;
+			default:
+				logger.log(Level.WARNING, "in appExecuteUnordered only read operations are supported");
 			}
 			if (hasReply) {
 				objOut.flush();
@@ -171,7 +188,7 @@ public class KSVServer extends DefaultSingleRecoverable {
 	public void installSnapshot(byte[] state) {
 		try (ByteArrayInputStream byteIn = new ByteArrayInputStream(state);
 				ObjectInput objIn = new ObjectInputStream(byteIn)) {
-			replicaMap = (ConcurrentHashMap<Integer, Integer>)objIn.readObject();
+			replicaMap = (ConcurrentHashMap<Integer, Integer>) objIn.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			logger.log(Level.SEVERE, "Error while installing snapshot", e);
 		}
