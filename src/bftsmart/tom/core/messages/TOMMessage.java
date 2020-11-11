@@ -46,6 +46,9 @@ public class TOMMessage extends SystemMessage implements Externalizable, Compara
 
 	private byte[] content = null; // Content of the message
 
+	// Causality of the command
+	private byte[] causality = null; 
+
 	//the fields bellow are not serialized!!!
 	private transient int id; // ID for this message. It should be unique
 
@@ -124,6 +127,18 @@ public class TOMMessage extends SystemMessage implements Externalizable, Compara
 		this.type = type;
 	}
 
+	public TOMMessage(int sender, int session, int sequence, int operationId, byte[] command, byte[] causality, int view, TOMMessageType type) {
+		super(sender);
+		this.session = session;
+		this.sequence = sequence;
+		this.operationId = operationId;
+		this.viewID = view;
+		buildId();
+		this.content = command;
+		this.causality = causality;
+		this.type = type;
+	}
+
 
 	/** THIS IS JOAO'S CODE, FOR DEBUGGING */
 	private transient DebugInfo info = null; // Debug information
@@ -189,6 +204,10 @@ public class TOMMessage extends SystemMessage implements Externalizable, Compara
 		return content;
 	}
 
+	public byte[] getCausality() {
+		return this.causality;
+	}
+
 	/**
 	 * Verifies if two TOMMessage are equal. For performance reasons, the method
 	 * only verifies if the send and sequence are equal.
@@ -240,6 +259,13 @@ public class TOMMessage extends SystemMessage implements Externalizable, Compara
 			out.writeInt(content.length);
 			out.write(content);
 		}
+
+		if (causality == null) {
+			out.writeInt(-1);
+		} else {
+			out.writeInt(causality.length);
+			out.write(causality);
+		}		
 	}
 
 	public void rExternal(DataInput in) throws IOException, ClassNotFoundException {
@@ -255,6 +281,12 @@ public class TOMMessage extends SystemMessage implements Externalizable, Compara
 		if (toRead != -1) {
 			content = new byte[toRead];
 			in.readFully(content);
+		}
+
+		toRead = in.readInt();
+		if (toRead != -1) {
+			causality = new byte[toRead];
+			in.readFully(causality);
 		}
 
 		buildId();

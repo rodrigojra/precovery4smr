@@ -45,19 +45,19 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     protected ReplicaContext replicaContext;
-    private TOMConfiguration config;
-    private ServerViewController controller;
-    private int checkpointPeriod;
+    protected TOMConfiguration config;
+    protected ServerViewController controller;
+    protected int checkpointPeriod;
 
     private ReentrantLock logLock = new ReentrantLock();
     private ReentrantLock hashLock = new ReentrantLock();
-    private ReentrantLock stateLock = new ReentrantLock();
+    protected ReentrantLock stateLock = new ReentrantLock();
     
     private MessageDigest md;
         
-    private StateLog log;
-    private List<byte[]> commands = new ArrayList<>();
-    private List<MessageContext> msgContexts = new ArrayList<>();
+    protected StateLog log;
+    protected List<byte[]> commands = new ArrayList<>();
+    protected List<MessageContext> msgContexts = new ArrayList<>();
     
     private StateManager stateManager;
     
@@ -77,7 +77,7 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
         
     }
     
-    private byte[] executeOrdered(byte[] command, MessageContext msgCtx, boolean noop) {
+    public byte[] executeOrdered(byte[] command, MessageContext msgCtx, boolean noop) {
         
         int cid = msgCtx.getConsensusId();
         
@@ -109,7 +109,7 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
         return reply;
     }
     
-    private final byte[] computeHash(byte[] data) {
+    protected final byte[] computeHash(byte[] data) {
         byte[] ret = null;
         hashLock.lock();
         ret = md.digest(data);
@@ -123,7 +123,7 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
     	return log;
     }
     
-    private void saveState(byte[] snapshot, int lastCID) {
+    protected void saveState(byte[] snapshot, int lastCID) {
         StateLog thisLog = getLog();
 
         logLock.lock();
@@ -141,7 +141,7 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
         logger.debug("Finished saving state of CID " + lastCID);
     }
 
-    private void saveCommands(byte[][] commands, MessageContext[] msgCtx) {
+    protected void saveCommands(byte[][] commands, MessageContext[] msgCtx) {
         
         if (commands.length != msgCtx.length) {
             logger.debug("----SIZE OF COMMANDS AND MESSAGE CONTEXTS IS DIFFERENT----");
@@ -276,7 +276,7 @@ public abstract class DefaultSingleRecoverable implements Recoverable, SingleExe
     	return stateManager;
     }
 	
-    private void initLog() {
+    protected void initLog() {
     	if(log == null) {
     		checkpointPeriod = config.getCheckpointPeriod();
             byte[] state = getSnapshot();

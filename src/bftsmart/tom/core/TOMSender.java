@@ -126,6 +126,11 @@ public abstract class TOMSender implements ReplyReceiver, Closeable, AutoCloseab
 						reqType));
 	}
 
+	public void tomMulticastCausal(byte[] command, byte[] causality, int reqId, int operationId, TOMMessageType reqType) {
+		cs.send(useSignatures, viewController.getCurrentViewProcesses(),
+				new TOMMessage(me, session, reqId, operationId, command, causality, viewController.getCurrentViewId(), reqType)
+				);
+	}
 
 	public void sendMessageToTargets(byte[] m, int reqId, int operationId, int[] targets, TOMMessageType type) {
 		if(this.getViewManager().getStaticConf().isTheTTP()) {

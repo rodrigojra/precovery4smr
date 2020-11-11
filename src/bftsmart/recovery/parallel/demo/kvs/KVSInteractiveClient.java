@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery.demo.kvs;
+package bftsmart.recovery.parallel.demo.kvs;
 
 import java.io.Console;
 import java.util.Set;

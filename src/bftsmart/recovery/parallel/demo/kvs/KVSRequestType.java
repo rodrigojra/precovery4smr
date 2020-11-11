@@ -1,4 +1,4 @@
-package bftsmart.parallel.recovery.demo.kvs;
+package bftsmart.recovery.parallel.demo.kvs;
 
 /**
  * Types of operation for BFT Map implementation

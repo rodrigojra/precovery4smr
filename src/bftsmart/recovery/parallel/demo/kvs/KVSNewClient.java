@@ -1,7 +1,7 @@
 /**
  * 
  */
-package bftsmart.parallel.recovery.demo.kvs;
+package bftsmart.recovery.parallel.demo.kvs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInput;
